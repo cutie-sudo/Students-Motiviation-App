@@ -1,0 +1,28 @@
+{
+  "name": "students-motiviation-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cutie-sudo/Students-Motiviation-App.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cutie-sudo/Students-Motiviation-App/issues"
+  },
+  "homepage": "https://github.com/cutie-sudo/Students-Motiviation-App#readme",
+  "description": "",
+  "dependencies": {
+    "react-router-dom": "^7.2.0"
+  },
+  "devDependencies": {
+    "vite": "^6.1.0"
+  }
+}
