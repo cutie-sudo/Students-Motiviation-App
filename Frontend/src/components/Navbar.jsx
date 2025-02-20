@@ -55,18 +55,6 @@ const Navbar = () => {
             </>
           )}
 
-          {/* Search Button Component */}
-          <li className="nav-item relative flex items-center border border-gray-300 rounded-full bg-white px-4 py-2">
-               <input
-                  type="text"
-                  placeholder="Search"
-              className="bg-transparent text-gray-700 placeholder-gray-500 outline-none px-2"
-              />
-              <button className="ml-2 p-2 rounded-full text-white transition">
-                  🔍
-               </button>
-          </li>
-
 
           {isLoggedIn ? (
             <li className="border border-white rounded-[10px] p-2">
@@ -89,6 +77,17 @@ const Navbar = () => {
                   Sign Up
                 </Link>
               </li>
+               {/* Search Button Component */}
+          <li className="nav-item relative flex items-center border border-gray-300 rounded-full bg-white px-4 py-2">
+               <input
+                  type="text"
+                  placeholder="Search"
+              className="bg-transparent text-gray-700 placeholder-gray-500 outline-none px-2"
+              />
+              <button className="ml-2 p-2 rounded-full text-white transition">
+                  🔍
+               </button>
+          </li>
             </>
           )}
         </ul>
