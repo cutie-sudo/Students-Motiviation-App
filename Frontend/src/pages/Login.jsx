@@ -66,7 +66,7 @@ export default function Login() {
 
         <button
           type="submit"
-          className="w-full h-12 bg-[#15BAE7] hover:bg-blue-800 transition-all duration-700 rounded-full shadow-xs text-white text-base font-semibold leading-6 mb-6"
+          className="w-full h-12 bg-gradient-to-r from-blue-500 to-cyan-400 hover:bg-blue-800 transition-all duration-700 rounded-full shadow-xs text-white text-base font-semibold leading-6 mb-6"
         >
           Sign in
         </button>
