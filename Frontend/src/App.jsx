@@ -3,14 +3,16 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup"; // Signup page
+import Signup from "./pages/Signup";// Signup page
 // import Categories from "./pages/Categories";
 // import Community from "./pages/Community";
 // import Profile from "./pages/Profile";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
   return (
     <>
+    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
       <Navbar />
       <div className="min-h-screen">
         <Routes>
@@ -23,6 +25,7 @@ function App() {
         </Routes>
       </div>
       <Footer />
+    </GoogleOAuthProvider>
     </>
   );
 }

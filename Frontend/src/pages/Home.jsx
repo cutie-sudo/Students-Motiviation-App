@@ -88,7 +88,7 @@ const Home = () => {
           </div>
           <div className="text-center border-2 border-gray-300 p-4 rounded-lg">
             <img className="w-24 h-24 rounded-full mx-auto" src="../images/me.webp" alt="Abdirizak" />
-            <p className="font-bold mt-2 text-xl">Abdirizak Abubakar</p>
+            <p className="font-bold mt-2 text-xl">Abdurizak Abubakar</p>
           </div>
         </div>
       </section>
