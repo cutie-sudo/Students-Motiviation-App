@@ -96,21 +96,21 @@ const Home = () => {
           <h2 className="text-3xl md:text-4xl font-semibold text-center mb-12">Meet Our Team</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white border border-gray-200 rounded-lg p-6 shadow hover:shadow-lg transition-shadow duration-300 text-center">
-              <img className="w-28 h-28 rounded-full mx-auto mb-4 object-cover" src="../images/adan.webp" alt="Adan" />
+              <img className="w-28 h-28 rounded-full mx-auto mb-4 object-cover" src="../images/adan.jpeg" alt="Adan" />
               <h3 className="font-semibold text-xl mb-2">Adan Abdullahi</h3>
               <p className="text-gray-600 text-sm">
                 A visionary leader focused on integrating tech innovations into educational strategies.
               </p>
             </div>
             <div className="bg-white border border-gray-200 rounded-lg p-6 shadow hover:shadow-lg transition-shadow duration-300 text-center">
-              <img className="w-28 h-28 rounded-full mx-auto mb-4 object-cover" src="../images/faith.webp" alt="Faith" />
+              <img className="w-28 h-28 rounded-full mx-auto mb-4 object-cover" src="../images/faith.jpeg" alt="Faith" />
               <h3 className="font-semibold text-xl mb-2">Faith Nguli</h3>
               <p className="text-gray-600 text-sm">
                 Passionate about creating engaging learning experiences and fostering community connections.
               </p>
             </div>
             <div className="bg-white border border-gray-200 rounded-lg p-6 shadow hover:shadow-lg transition-shadow duration-300 text-center">
-              <img className="w-28 h-28 rounded-full mx-auto mb-4 object-cover" src="../images/me.webp" alt="Abdurizak" />
+              <img className="w-28 h-28 rounded-full mx-auto mb-4 object-cover" src="../images/me.jpeg" alt="Abdurizak" />
               <h3 className="font-semibold text-xl mb-2">Abdurizak Abubakar</h3>
               <p className="text-gray-600 text-sm">
                 Dedicated to leveraging data-driven insights for personalized education and growth.
