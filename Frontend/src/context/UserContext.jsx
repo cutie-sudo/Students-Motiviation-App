@@ -1,4 +1,6 @@
 import { createContext, useState, useEffect } from "react";
+import { auth, registerWithEmail, signInWithGoogle } from "../firebaseConfig";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 // Create UserContext
 export const UserContext = createContext();
@@ -8,51 +10,56 @@ export default function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user from sessionStorage or auto-login dummy admin in development
+  // Check for authenticated user
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-
-    if (process.env.NODE_ENV === "development") {
-      // If no user is stored, auto-set a dummy admin
-      if (!storedUser) {
-        const dummyAdmin = { email: "admin@example.com", role: "admin" };
-        sessionStorage.setItem("user", JSON.stringify(dummyAdmin));
-        setUser(dummyAdmin);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        const userData = {
+          email: currentUser.email,
+          role: "student", // Default role, can be extended with Firestore if needed
+        };
+        sessionStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
       } else {
-        setUser(JSON.parse(storedUser));
+        sessionStorage.removeItem("user");
+        setUser(null);
       }
-    } else {
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    }
-    setLoading(false);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  // Login function
-  const login = (email, password, role) => {
-    // Simulated authentication (Replace with API call when backend is ready)
-    if (email === "admin@example.com" && password === "password") {
-      const userData = { email, role: "admin" };
+  // Login function with email and password
+  const login = async (email, password, role) => {
+    try {
+      await registerWithEmail(email, password);
+      const userData = { email, role };
       sessionStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
-    } else if (email === "student@example.com" && password === "password") {
-      const userData = { email, role: "student" };
-      sessionStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
-    } else {
+    } catch (error) {
       throw new Error("Invalid credentials");
     }
   };
 
+  // Google Sign-In
+  const googleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Google Sign-In Failed:", error);
+    }
+  };
+
   // Logout function
-  const logout = () => {
+  const logout = async () => {
+    await signOut(auth);
     sessionStorage.removeItem("user");
     setUser(null);
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, loading }}>
+    <UserContext.Provider value={{ user, login, googleLogin, logout, loading }}>
       {children}
     </UserContext.Provider>
   );

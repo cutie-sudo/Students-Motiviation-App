@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-import { GoogleLogin } from '@react-oauth/google';
+import { FcGoogle } from 'react-icons/fc'; // Import the Google icon
 
 export default function Register() {
-  const { addUser } = useContext(UserContext);
+  const { addUser, googleLogin } = useContext(UserContext);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -24,17 +24,15 @@ export default function Register() {
     }
   };
 
-  // Handle Google Login Success
-  const handleGoogleSuccess = (credentialResponse) => {
-    console.log('Google Sign-Up Success:', credentialResponse);
-    setMessage('Signed up successfully with Google!');
-    // You can implement the logic to sign up the user using the Google credential
-  };
-
-  // Handle Google Login Failure
-  const handleGoogleFailure = (error) => {
-    console.log('Google Sign-Up Failed:', error);
-    setMessage('Google sign-up failed. Please try again.');
+  // Handle Google Sign-Up
+  const handleGoogleSignUp = async () => {
+    try {
+      await googleLogin();
+      setMessage('Signed up successfully with Google!');
+    } catch (error) {
+      console.error('Google Sign-Up Failed:', error);
+      setMessage('Google sign-up failed. Please try again.');
+    }
   };
 
   return (
@@ -48,13 +46,10 @@ export default function Register() {
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="firstName">
-              First Name
-            </label>
+            <label className="block text-sm font-medium mb-1">First Name</label>
             <input
               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
               type="text"
-              id="firstName"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
@@ -62,13 +57,10 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="lastName">
-              Last Name
-            </label>
+            <label className="block text-sm font-medium mb-1">Last Name</label>
             <input
               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
               type="text"
-              id="lastName"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
@@ -77,13 +69,10 @@ export default function Register() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" htmlFor="email">
-            Email
-          </label>
+          <label className="block text-sm font-medium mb-1">Email</label>
           <input
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             type="email"
-            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -91,13 +80,10 @@ export default function Register() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" htmlFor="password">
-            Password
-          </label>
+          <label className="block text-sm font-medium mb-1">Password</label>
           <input
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             type="password"
-            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -105,12 +91,9 @@ export default function Register() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" htmlFor="role">
-            Role
-          </label>
+          <label className="block text-sm font-medium mb-1">Role</label>
           <select
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            id="role"
             value={role}
             onChange={(e) => setRole(e.target.value)}
             required
@@ -136,11 +119,15 @@ export default function Register() {
 
         <div className="flex flex-col items-center mt-6">
           <p className="text-gray-500 mb-2">Or sign up with</p>
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleFailure}
-          />
+          <button
+            onClick={handleGoogleSignUp}
+            className="w-full flex items-center justify-center gap-2 py-2 mt-2 bg-gradient-to-r bg-gray-100 text-black rounded-lg shadow-md hover:shadow-lg transition duration-300"
+          >
+            <FcGoogle className="text-2xl" />
+            Sign Up with Google
+          </button>
         </div>
+
       </form>
     </div>
   );
