@@ -1,180 +1,201 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const Admin = () => {
   // State for User Management
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   // State for Content Management
-  const [contentTitle, setContentTitle] = useState('');
-  const [contentBody, setContentBody] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-
+  const [contentTitle, setContentTitle] = useState("");
+  const [contentBody, setContentBody] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   // State for Category Management
-  const [newCategory, setNewCategory] = useState('');
-
+  const [newCategory, setNewCategory] = useState("");
   // State for Profile Management
-  const [adminName, setAdminName] = useState('');
-  const [adminEmail, setAdminEmail] = useState('');
-  const [adminBio, setAdminBio] = useState('');
-
+  const [adminName, setAdminName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminBio, setAdminBio] = useState("");
   // State for Content Review (comment input)
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
 
   return (
-    <div className="p-4 space-y-8">
-      <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-
-      {/* User Management Section */}
-      <div className="border rounded p-4 shadow-lg">
-        <h2 className="text-2xl mb-2">User Management</h2>
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="input input-bordered w-full"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input input-bordered w-full"
-          />
-          <div className="space-x-2">
-            <button className="btn btn-primary">Add User</button>
-            <button className="btn btn-warning">Deactivate User</button>
+    <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center">
+      <h1 className="text-4xl font-bold text-blue-700 mb-8">Admin Dashboard</h1>
+      <div className="max-w-4xl w-full space-y-6">
+        {/* User Management Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">User Management</h2>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <div className="flex justify-between">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                Add User
+              </button>
+              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                Deactivate User
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Content Management Section */}
-      <div className="border rounded p-4 shadow-lg">
-        <h2 className="text-2xl mb-2">Content Management</h2>
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="Content Title"
-            value={contentTitle}
-            onChange={(e) => setContentTitle(e.target.value)}
-            className="input input-bordered w-full"
-          />
-          <textarea
-            placeholder="Content Body"
-            value={contentBody}
-            onChange={(e) => setContentBody(e.target.value)}
-            className="textarea textarea-bordered w-full"
-          />
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="select select-bordered w-full"
-          >
-            <option value="">Select Category</option>
-            <option value="DevOps">DevOps</option>
-            <option value="FullStack">FullStack</option>
-            <option value="Front-End">Front-End</option>
-            <option value="Back-End">Back-End</option>
-          </select>
-          <div className="space-x-2">
-            <button className="btn btn-success">Approve Content</button>
-            <button className="btn btn-danger">Flag Content</button>
-            <button className="btn btn-secondary">Remove Content</button>
+        {/* Content Management Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Content Management</h2>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Content Title"
+              value={contentTitle}
+              onChange={(e) => setContentTitle(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <textarea
+              placeholder="Content Body"
+              value={contentBody}
+              onChange={(e) => setContentBody(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            >
+              <option value="">Select Category</option>
+              <option value="DevOps">DevOps</option>
+              <option value="FullStack">FullStack</option>
+              <option value="Front-End">Front-End</option>
+              <option value="Back-End">Back-End</option>
+            </select>
+            <div className="flex justify-between">
+              <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                Approve Content
+              </button>
+              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                Flag Content
+              </button>
+              <button className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                Remove Content
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Category Management Section */}
-      <div className="border rounded p-4 shadow-lg">
-        <h2 className="text-2xl mb-2">Category Management</h2>
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="New Category"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            className="input input-bordered w-full"
-          />
-          <button className="btn btn-info">Create Category</button>
-          <div className="mt-2">
-            <p className="font-semibold">Existing Categories:</p>
-            <ul className="list-disc pl-5">
-              <li>DevOps</li>
-              <li>FullStack</li>
-              <li>Front-End</li>
-              <li>Back-End</li>
-            </ul>
+        {/* Category Management Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Category Management</h2>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="New Category"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <button className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+              Create Category
+            </button>
+            <div>
+              <p className="font-semibold text-gray-700">Existing Categories:</p>
+              <ul className="list-disc pl-5 text-gray-600">
+                <li>DevOps</li>
+                <li>FullStack</li>
+                <li>Front-End</li>
+                <li>Back-End</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Profile Management Section */}
-      <div className="border rounded p-4 shadow-lg">
-        <h2 className="text-2xl mb-2">Profile Management</h2>
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="Admin Name"
-            value={adminName}
-            onChange={(e) => setAdminName(e.target.value)}
-            className="input input-bordered w-full"
-          />
-          <input
-            type="email"
-            placeholder="Admin Email"
-            value={adminEmail}
-            onChange={(e) => setAdminEmail(e.target.value)}
-            className="input input-bordered w-full"
-          />
-          <textarea
-            placeholder="Admin Bio"
-            value={adminBio}
-            onChange={(e) => setAdminBio(e.target.value)}
-            className="textarea textarea-bordered w-full"
-          />
-          <button className="btn btn-primary">Create Profile</button>
-        </div>
-      </div>
-
-      {/* Content Posting & Editing Section */}
-      <div className="border rounded p-4 shadow-lg">
-        <h2 className="text-2xl mb-2">Post / Edit Content</h2>
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="Edit Content Title"
-            className="input input-bordered w-full"
-          />
-          <textarea
-            placeholder="Edit Content Details"
-            className="textarea textarea-bordered w-full"
-          />
-          <div className="space-x-2">
-            <button className="btn btn-success">Post Content</button>
-            <button className="btn btn-warning">Edit Content</button>
+        {/* Profile Management Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Profile Management</h2>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Admin Name"
+              value={adminName}
+              onChange={(e) => setAdminName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <input
+              type="email"
+              placeholder="Admin Email"
+              value={adminEmail}
+              onChange={(e) => setAdminEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <textarea
+              placeholder="Admin Bio"
+              value={adminBio}
+              onChange={(e) => setAdminBio(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+              Create Profile
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Content Review Section */}
-      <div className="border rounded p-4 shadow-lg">
-        <h2 className="text-2xl mb-2">Content Review</h2>
-        <div className="space-y-2">
-          <p className="font-semibold">Sample Content Title</p>
-          <p>This is a sample content that users have posted.</p>
-          <div className="space-x-2">
-            <button className="btn btn-primary">Like</button>
-            <button className="btn btn-secondary">Dislike</button>
-            <button className="btn btn-info">Comment</button>
+        {/* Content Posting & Editing Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Post / Edit Content</h2>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Edit Content Title"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <textarea
+              placeholder="Edit Content Details"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            />
+            <div className="flex justify-between">
+              <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                Post Content
+              </button>
+              <button className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
+                Edit Content
+              </button>
+            </div>
           </div>
-          <textarea
-            placeholder="Add a comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            className="textarea textarea-bordered w-full mt-2"
-          />
+        </div>
+
+        {/* Content Review Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Content Review</h2>
+          <div className="space-y-4">
+            <p className="font-semibold text-gray-700">Sample Content Title</p>
+            <p className="text-gray-600">This is a sample content that users have posted.</p>
+            <div className="flex justify-between">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                Like
+              </button>
+              <button className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                Dislike
+              </button>
+              <button className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                Comment
+              </button>
+            </div>
+            <textarea
+              placeholder="Add a comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 mt-2"
+            />
+          </div>
         </div>
       </div>
     </div>
