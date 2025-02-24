@@ -8,11 +8,23 @@ export default function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user from sessionStorage on startup
+  // Load user from sessionStorage or auto-login dummy admin in development
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+
+    if (process.env.NODE_ENV === "development") {
+      // If no user is stored, auto-set a dummy admin
+      if (!storedUser) {
+        const dummyAdmin = { email: "admin@example.com", role: "admin" };
+        sessionStorage.setItem("user", JSON.stringify(dummyAdmin));
+        setUser(dummyAdmin);
+      } else {
+        setUser(JSON.parse(storedUser));
+      }
+    } else {
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
     }
     setLoading(false);
   }, []);
