@@ -21,7 +21,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="p-4 flex items-center justify-between bg-gradient-to-r from-blue-500 to-cyan-400 shadow-md">
+      <nav className="p-4 flex items-center justify-between bg-gradient-to-r from-blue-600 to-cyan-500 shadow-md">
         {/* Left Side: Project Name */}
         <h1 className="text-white text-[64px] font-semibold font-['Oswald'] ml-6">
           TechElevate
