@@ -1,36 +1,22 @@
+// src/pages/Login.jsx
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
 export default function Login() {
-  const { login, resetPassword } = useContext(UserContext);
+  const { login } = useContext(UserContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student'); // Default role is student
+  const [role, setRole] = useState('student'); 
   const [errorMessage, setErrorMessage] = useState('');
-  const [showReset, setShowReset] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetMessage, setResetMessage] = useState('');
 
-  // Handle form submission for login
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password, role);
+      await login(email, password, role.toLowerCase());
     } catch (error) {
       setErrorMessage('Invalid login credentials');
-    }
-  };
-
-  // Handle password reset submission
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    try {
-      await resetPassword(resetEmail);
-      setResetMessage('Password reset link sent to your email.');
-    } catch (error) {
-      setResetMessage('Failed to send password reset link.');
     }
   };
 
@@ -87,62 +73,7 @@ export default function Login() {
         >
           Sign in
         </button>
-
-        <div className="text-center mb-4">
-          <button
-            type="button"
-            onClick={() => setShowReset(true)}
-            className="text-blue-500 hover:underline font-medium"
-          >
-            Forgot password?
-          </button>
-        </div>
-
-        <div className="text-center">
-          <p className="text-gray-600">or</p>
-          <Link to="/signup" className="text-blue-500 hover:underline font-medium">
-            Create Account!
-          </Link>
-        </div>
       </form>
-
-      {showReset && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <form onSubmit={handleResetPassword} className="bg-white p-8 rounded-lg shadow-lg w-[30%]">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Reset Password</h3>
-
-            {resetMessage && <p className="text-green-500 mb-4">{resetMessage}</p>}
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-gray-600">Email</label>
-              <input
-                type="email"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Enter your email for password reset"
-                required
-              />
-            </div>
-
-            <div className="flex justify-between">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-              >
-                Send Reset Link
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowReset(false)}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,202 +1,535 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { UserContext } from "../context/UserContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./Admin.css"; // Import a CSS file for styling
 
 const Admin = () => {
-  // State for User Management
+  const { authToken } = useContext(UserContext);
+
+  // User Management
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // State for Content Management
-  const [contentTitle, setContentTitle] = useState("");
-  const [contentBody, setContentBody] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  // State for Category Management
+  const [role, setRole] = useState("student");
+  const [userId, setUserId] = useState("");
+
+  // Category Management
   const [newCategory, setNewCategory] = useState("");
-  // State for Profile Management
-  const [adminName, setAdminName] = useState("");
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminBio, setAdminBio] = useState("");
-  // State for Content Review (comment input)
+  const [categories, setCategories] = useState([]);
+  const [showCategories, setShowCategories] = useState(false);
+
+  // Content Management
+  const [contentTitle, setContentTitle] = useState("");
+  const [contentDescription, setContentDescription] = useState("");
+  const [contentType, setContentType] = useState("video");
+  const [contentLink, setContentLink] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [contents, setContents] = useState([]);
+
+  // Review Management
   const [comment, setComment] = useState("");
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-blue-700 mb-8">Admin Dashboard</h1>
-      <div className="max-w-4xl w-full space-y-6">
-        {/* User Management Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">User Management</h2>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <div className="flex justify-between">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                Add User
-              </button>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                Deactivate User
-              </button>
-            </div>
-          </div>
-        </div>
+  useEffect(() => {
+    fetchCategories();
+    fetchContents();
+  }, [authToken]);
 
-        {/* Content Management Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Content Management</h2>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Content Title"
-              value={contentTitle}
-              onChange={(e) => setContentTitle(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <textarea
-              placeholder="Content Body"
-              value={contentBody}
-              onChange={(e) => setContentBody(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+  // Fetch Functions
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/categories", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchContents = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/content", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.json();
+      setContents(data);
+    } catch (error) {
+      console.error("Error fetching contents:", error);
+    }
+  };
+
+  // User Management
+  const handleAddUser = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          firstName: username,
+          lastName: "User",
+          email: `${username}@app.com`,
+          password,
+          role,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("User added successfully!");
+      } else {
+        toast.error("Failed to add user.");
+      }
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
+  };
+
+  const handleDeactivateUser = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/users/${userId}/deactivate`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      if (response.ok) {
+        toast.success("User deactivated successfully!");
+      } else {
+        toast.error("Failed to deactivate user.");
+      }
+    } catch (error) {
+      console.error("Error deactivating user:", error);
+    }
+  };
+
+  // Category Management
+  const handleCreateCategory = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ name: newCategory }),
+      });
+
+      if (response.ok) {
+        toast.success("Category created successfully!");
+        setNewCategory(""); // Clear the input field
+        fetchCategories();
+      } else {
+        toast.error("Failed to create category.");
+      }
+    } catch (error) {
+      console.error("Error creating category:", error);
+    }
+  };
+
+  const handleRemoveCategory = async (categoryId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/categories/${categoryId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Category removed successfully!");
+        fetchCategories();
+      } else {
+        toast.error("Failed to remove category.");
+      }
+    } catch (error) {
+      console.error("Error removing category:", error);
+    }
+  };
+
+  // Helper function to remove content
+  const handleRemoveContent = async (contentId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Content removed successfully!");
+        fetchContents(); // Refresh the content list to update UI
+      } else {
+        toast.error("Failed to remove content.");
+      }
+    } catch (error) {
+      console.error("Error removing content:", error);
+      toast.error("An error occurred while removing the content.");
+    }
+  };
+
+  // Content Management
+  const handlePostContent = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          title: contentTitle,
+          description: contentDescription,
+          category_id: selectedCategory,
+          content_type: contentType,
+          content_link: contentLink,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Content posted successfully!");
+        fetchContents();
+      } else {
+        toast.error("Failed to post content.");
+      }
+    } catch (error) {
+      console.error("Error posting content:", error);
+    }
+  };
+
+  // Approve Content Function
+  const handleApproveContent = async (contentId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/approve`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Content approved successfully!");
+        fetchContents();
+      } else {
+        toast.error("Failed to approve content.");
+      }
+    } catch (error) {
+      console.error("Error approving content:", error);
+    }
+  };
+
+  // Edit Content Function (placeholder)
+  const handleEditContent = (contentId) => {
+    // Add logic to show a modal or form to edit the content
+    console.log("Editing content with ID:", contentId);
+  };
+
+  // Like Content Function
+  const handleLikeContent = async (contentId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/like`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Content liked successfully!");
+        fetchContents();
+      } else {
+        toast.error("Failed to like content.");
+      }
+    } catch (error) {
+      console.error("Error liking content:", error);
+    }
+  };
+
+  // Dislike Content Function
+  const handleDislikeContent = async (contentId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/dislike`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Content disliked successfully!");
+        fetchContents();
+      } else {
+        toast.error("Failed to dislike content.");
+      }
+    } catch (error) {
+      console.error("Error disliking content:", error);
+    }
+  };
+
+  // Flag Content Function
+  const handleFlagContent = async (contentId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/flag`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Content flagged successfully!");
+        fetchContents();
+      } else {
+        toast.error("Failed to flag content.");
+      }
+    } catch (error) {
+      console.error("Error flagging content:", error);
+    }
+  };
+
+  // Comment on Content Function
+  const handleCommentContent = async (contentId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ comment }),
+      });
+
+      if (response.ok) {
+        toast.success("Comment added successfully!");
+        setComment(""); // Clear the comment input
+        fetchContents();
+      } else {
+        toast.error("Failed to add comment.");
+      }
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
+
+  return (
+    <div className="admin-dashboard">
+      <h1 className="dashboard-title">Admin Dashboard</h1>
+
+      <div className="dashboard-container">
+        {/* User Management Section */}
+        <section className="dashboard-section user-management">
+          <h2 className="section-title">User Management</h2>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="input-field"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field"
+          />
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="input-field"
+          >
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+          </select>
+          <input
+            type="text"
+            placeholder="User ID to Deactivate"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            className="input-field"
+          />
+          <div className="button-group">
+            <button
+              onClick={handleAddUser}
+              className="action-button add"
             >
-              <option value="">Select Category</option>
-              <option value="DevOps">DevOps</option>
-              <option value="FullStack">FullStack</option>
-              <option value="Front-End">Front-End</option>
-              <option value="Back-End">Back-End</option>
-            </select>
-            <div className="flex justify-between">
-              <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                Approve Content
-              </button>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                Flag Content
-              </button>
-              <button className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                Remove Content
-              </button>
-            </div>
+              Add User
+            </button>
+            <button
+              onClick={handleDeactivateUser}
+              className="action-button deactivate"
+            >
+              Deactivate User
+            </button>
           </div>
-        </div>
+        </section>
 
         {/* Category Management Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Category Management</h2>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="New Category"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+        <section className="dashboard-section category-management">
+          <h2 className="section-title">Category Management</h2>
+          <input
+            type="text"
+            placeholder="New Category Name"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            className="input-field"
+          />
+          <div className="button-group">
+            <button
+              onClick={handleCreateCategory}
+              className="action-button add"
+            >
               Create Category
             </button>
-            <div>
-              <p className="font-semibold text-gray-700">Existing Categories:</p>
-              <ul className="list-disc pl-5 text-gray-600">
-                <li>DevOps</li>
-                <li>FullStack</li>
-                <li>Front-End</li>
-                <li>Back-End</li>
-              </ul>
-            </div>
           </div>
-        </div>
+          <div className="category-dropdown">
+            <button
+              onClick={() => setShowCategories(!showCategories)}
+              className="dropdown-toggle"
+            >
+              {showCategories ? "Hide Categories" : "Show Categories"}
+            </button>
+            {showCategories && (
+              <div className="dropdown-list">
+                {categories.map((category) => (
+                  <div key={category.id} className="category-item">
+                    {category.name}
+                    <button
+                      onClick={() => handleRemoveCategory(category.id)}
+                      className="action-button remove-category"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
 
-        {/* Profile Management Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Profile Management</h2>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Admin Name"
-              value={adminName}
-              onChange={(e) => setAdminName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <input
-              type="email"
-              placeholder="Admin Email"
-              value={adminEmail}
-              onChange={(e) => setAdminEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <textarea
-              placeholder="Admin Bio"
-              value={adminBio}
-              onChange={(e) => setAdminBio(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              Create Profile
+        {/* Content Management Section */}
+        <section className="dashboard-section content-management">
+          <h2 className="section-title">Content Management</h2>
+          <input
+            type="text"
+            placeholder="Content Title"
+            value={contentTitle}
+            onChange={(e) => setContentTitle(e.target.value)}
+            className="input-field"
+          />
+          <textarea
+            placeholder="Content Description"
+            value={contentDescription}
+            onChange={(e) => setContentDescription(e.target.value)}
+            className="input-field"
+          />
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="input-field"
+          >
+            <option value="">Select Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="Content Link"
+            value={contentLink}
+            onChange={(e) => setContentLink(e.target.value)}
+            className="input-field"
+          />
+          <div className="button-group">
+            <button
+              onClick={handlePostContent}
+              className="action-button add"
+            >
+              Post Content
             </button>
           </div>
-        </div>
+        </section>
 
-        {/* Content Posting & Editing Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Post / Edit Content</h2>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Edit Content Title"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <textarea
-              placeholder="Edit Content Details"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <div className="flex justify-between">
-              <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                Post Content
-              </button>
-              <button className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
-                Edit Content
-              </button>
-            </div>
-          </div>
-        </div>
+       {/* Review Management Section */}
+       <section className="dashboard-section review-management">
+          <h2 className="section-title">Review Content</h2>
+          <div className="review-grid">
+            {contents.map((content) => (
+              <div key={content.id} className="review-card">
+                <h3 className="review-title">{content.title}</h3>
+                <p className="review-description">{content.description}</p>
 
-        {/* Content Review Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Content Review</h2>
-          <div className="space-y-4">
-            <p className="font-semibold text-gray-700">Sample Content Title</p>
-            <p className="text-gray-600">This is a sample content that users have posted.</p>
-            <div className="flex justify-between">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                Like
-              </button>
-              <button className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                Dislike
-              </button>
-              <button className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                Comment
-              </button>
-            </div>
-            <textarea
-              placeholder="Add a comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 mt-2"
-            />
+                <div className="dropdown">
+                  <button className="dropdown-button">Actions ▼</button>
+                  <div className="dropdown-content">
+                    <button
+                      onClick={() => handleLikeContent(content.id)}
+                      className="action-button like"
+                    >
+                      Like
+                    </button>
+                    <button
+                      onClick={() => handleDislikeContent(content.id)}
+                      className="action-button dislike"
+                    >
+                      Dislike
+                    </button>
+                    <button
+                      onClick={() => handleFlagContent(content.id)}
+                      className="action-button flag"
+                    >
+                      Flag
+                    </button>
+                    <button
+                      onClick={() => handleRemoveContent(content.id)}
+                      className="action-button remove"
+                    >
+                      Remove
+                    </button>
+                    <button
+                      onClick={() => handleApproveContent(content.id)}
+                      className="action-button approve"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleEditContent(content.id)}
+                      className="action-button edit"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+
+                <div className="comment-section">
+                  <input
+                    type="text"
+                    placeholder="Add a comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="input-field"
+                  />
+                  <button
+                    onClick={() => handleCommentContent(content.id)}
+                    className="action-button comment"
+                  >
+                    Comment
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );
