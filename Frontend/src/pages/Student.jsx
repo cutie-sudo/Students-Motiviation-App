@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import './Student.css'; // Import the CSS file
+import './Student.css'; 
 
 const Student = () => {
   const [profile, setProfile] = useState({ name: "", email: "", bio: "" });
@@ -11,7 +11,7 @@ const Student = () => {
   const [contentComments, setContentComments] = useState({});
   const [contents, setContents] = useState([]);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+  const token = localStorage.getItem('token'); 
 
   useEffect(() => {
     fetchContents();
@@ -183,7 +183,6 @@ const Student = () => {
 
   const handleViewContent = (link) => {
     console.log("Viewing content link:", link);
-    // You can add logic here to navigate to the content link if needed
   };
 
   return (
@@ -226,7 +225,7 @@ const Student = () => {
                 <div className="content-actions">
                   <Button onClick={() => handleLikeContent(content.id)} className="button button-green">Like</Button>
                   <Button onClick={() => handleDislikeContent(content.id)} className="button button-red">Dislike</Button>
-                  <Button onClick={() => handleAddToWishlist(content.title)} className="button button-purple">Add to Wishlist</Button>
+                  <Button onClick={() => handleAddToWishlist(content.title)} className="button button-purple">Wishlist</Button>
                   <Button onClick={() => handleSubscribeCategory(content.category)} className="button button-yellow">Subscribe</Button>
                   <Button onClick={() => handleViewContent(content.content_link)} className="button button-blue">
                     {content.content_type === "video" && "Watch"}

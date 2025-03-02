@@ -1,11 +1,11 @@
-// src/pages/Signup.jsx
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-import { FcGoogle } from 'react-icons/fc'; // Import the Google icon
+import { FcGoogle } from 'react-icons/fc';
+import { handleGoogleSignIn } from '../authService';  // ✅ Import the correct function
 
 export default function Register() {
-  const { addUser, googleLogin } = useContext(UserContext);
+  const { addUser } = useContext(UserContext);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -28,7 +28,7 @@ export default function Register() {
   // Handle Google Sign-Up
   const handleGoogleSignUp = async () => {
     try {
-      await googleLogin();
+      await handleGoogleSignIn();  // ✅ Corrected function call
       setMessage('Signed up successfully with Google!');
     } catch (error) {
       console.error('Google Sign-Up Failed:', error);
@@ -121,8 +121,8 @@ export default function Register() {
         <div className="flex flex-col items-center mt-6">
           <p className="text-gray-500 mb-2">Or sign up with</p>
           <button
-            onClick={handleGoogleSignUp}
-            className="w-full flex items-center justify-center gap-2 py-2 mt-2 bg-gradient-to-r bg-gray-100 text-black rounded-lg shadow-md hover:shadow-lg transition duration-300"
+            onClick={handleGoogleSignUp}  
+            className="w-full flex items-center justify-center gap-2 py-2 mt-2 bg-gray-100 text-black rounded-lg shadow-md hover:shadow-lg transition duration-300"
           >
             <FcGoogle className="text-2xl" />
             Sign Up with Google

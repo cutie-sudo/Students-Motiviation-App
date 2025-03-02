@@ -1,22 +1,24 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import SearchButton from "./SearchButton"; // Import the SearchButton component
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../context/UserContext"; 
+import SearchButton from "./SearchButton"; 
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { authToken, logout, current_user } = useContext(UserContext); 
 
-  // Check authentication status on component mount
+  const [isLoggedIn, setIsLoggedIn] = useState(!!authToken);
+
+  // ✅ Ensure Navbar updates when login/logout happens
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    setIsLoggedIn(!!token); // Convert token existence to boolean
-  }, []);
+    setIsLoggedIn(!!authToken);
+  }, [authToken]);
 
-  // Logout Function
+  // ✅ Logout Function (Triggers Context Logout)
   const handleLogout = () => {
-    sessionStorage.removeItem("token"); // Clear authentication token
-    setIsLoggedIn(false);
-    navigate("/login"); // Redirect to login page
+    logout(); 
+    setIsLoggedIn(false); 
+    navigate("/login"); 
   };
 
   return (
@@ -30,41 +32,26 @@ const Navbar = () => {
         {/* Right Side: Navigation Links */}
         <ul className="flex space-x-6 items-center mr-6">
           <li className="border border-white rounded-[10px] p-2">
-            <Link className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300" to="/">
+            <Link className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-600 px-4 py-2 rounded transition duration-300" to="/">
               Home
             </Link>
           </li>
 
-          {isLoggedIn && (
+          {isLoggedIn ? (
             <>
-              <li className="border border-white rounded-[10px] p-2">
-                <Link className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300" to="/categories">
-                  Categories
-                </Link>
+              {/* ✅ Show User's First Name (If Available) */}
+              <li className="text-white text-[24px] font-light font-['Oswald']">
+                Welcome, {current_user?.firstName || "User"}!
               </li>
               <li className="border border-white rounded-[10px] p-2">
-                <Link className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300" to="/community">
-                  Community
-                </Link>
-              </li>
-              <li className="border border-white rounded-[10px] p-2">
-                <Link className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300" to="/profile">
-                  Profile
-                </Link>
+                <button 
+                  onClick={handleLogout}
+                  className="bg-cyan-500 text-white text-[23px] font-light font-['Oswald'] px-4 py-2  hover:bg-blue-600 rounded transition duration-300"
+                >
+                  Logout
+                </button>
               </li>
             </>
-          )}
-
-
-          {isLoggedIn ? (
-            <li className="border border-white rounded-[10px] p-2">
-              <button 
-                onClick={handleLogout}
-                className="bg-red-600 text-white text-[24px] font-light font-['Oswald'] px-4 py-2 rounded hover:bg-red-800 transition"
-              >
-                Logout
-              </button>
-            </li>
           ) : (
             <>
               <li className="border border-white rounded-[10px] p-2">
@@ -77,17 +64,17 @@ const Navbar = () => {
                   Sign Up
                 </Link>
               </li>
-               {/* Search Button Component */}
-          <li className="nav-item relative flex items-center border border-gray-300 rounded-full bg-white px-4 py-2">
-               <input
+              {/* Search Button Component */}
+              <li className="nav-item relative flex items-center border border-gray-300 rounded-full bg-white px-4 py-2">
+                <input
                   type="text"
                   placeholder="Search"
-              className="bg-transparent text-gray-700 placeholder-gray-500 outline-none px-2"
-              />
-              <button className="ml-2 p-2 rounded-full text-white transition">
+                  className="bg-transparent text-gray-700 placeholder-gray-500 outline-none px-2"
+                />
+                <button className="ml-2 p-2 rounded-full text-white transition">
                   🔍
-               </button>
-          </li>
+                </button>
+              </li>
             </>
           )}
         </ul>

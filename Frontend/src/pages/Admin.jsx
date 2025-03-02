@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./Admin.css"; // Import a CSS file for styling
+import "./Admin.css";
 
 const Admin = () => {
   const { authToken } = useContext(UserContext);
@@ -124,7 +124,7 @@ const Admin = () => {
 
       if (response.ok) {
         toast.success("Category created successfully!");
-        setNewCategory(""); // Clear the input field
+        setNewCategory(""); 
         fetchCategories();
       } else {
         toast.error("Failed to create category.");
@@ -228,7 +228,6 @@ const Admin = () => {
 
   // Edit Content Function (placeholder)
   const handleEditContent = (contentId) => {
-    // Add logic to show a modal or form to edit the content
     console.log("Editing content with ID:", contentId);
   };
 
@@ -309,7 +308,7 @@ const Admin = () => {
 
       if (response.ok) {
         toast.success("Comment added successfully!");
-        setComment(""); // Clear the comment input
+        setComment("");
         fetchContents();
       } else {
         toast.error("Failed to add comment.");
@@ -406,7 +405,7 @@ const Admin = () => {
                       onClick={() => handleRemoveCategory(category.id)}
                       className="action-button remove-category"
                     >
-                      Remove
+                      Delete
                     </button>
                   </div>
                 ))}
@@ -425,18 +424,21 @@ const Admin = () => {
             onChange={(e) => setContentTitle(e.target.value)}
             className="input-field"
           />
-          <textarea
-            placeholder="Content Description"
-            value={contentDescription}
-            onChange={(e) => setContentDescription(e.target.value)}
+         <select
+            value={contentType}
+            onChange={(e) => setContentType(e.target.value)}
             className="input-field"
-          />
+          >
+            <option value="video">Video</option>
+            <option value="note">Note</option>
+            <option value="podcast">Podcast</option>
+          </select>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="input-field"
           >
-            <option value="">Select Category</option>
+            <option value="">Choose Category</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
@@ -469,6 +471,21 @@ const Admin = () => {
                 <h3 className="review-title">{content.title}</h3>
                 <p className="review-description">{content.description}</p>
 
+                <div className="comment-section">
+                  <input
+                    type="text"
+                    placeholder="Add a comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="input-field"
+                  />
+                  <button
+                    onClick={() => handleCommentContent(content.id)}
+                    className="action-button comment"
+                  >
+                    Comment
+                  </button>
+                </div>
                 <div className="dropdown">
                   <button className="dropdown-button">Actions ▼</button>
                   <div className="dropdown-content">
@@ -509,22 +526,6 @@ const Admin = () => {
                       Edit
                     </button>
                   </div>
-                </div>
-
-                <div className="comment-section">
-                  <input
-                    type="text"
-                    placeholder="Add a comment"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="input-field"
-                  />
-                  <button
-                    onClick={() => handleCommentContent(content.id)}
-                    className="action-button comment"
-                  >
-                    Comment
-                  </button>
                 </div>
               </div>
             ))}

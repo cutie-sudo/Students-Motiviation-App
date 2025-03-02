@@ -1,4 +1,3 @@
-// src/context/UserContext.jsx
 import { createContext, useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,31 +7,27 @@ export const UserContext = createContext();
 export default function UserProvider({ children }) {
     const navigate = useNavigate();
     
-    // Load authToken from sessionStorage with error handling
     const [authToken, setAuthToken] = useState(() => {
         try {
-            const storedToken = sessionStorage.getItem("token");
-            return storedToken ? JSON.parse(storedToken) : null;
+            return localStorage.getItem("token") || null;
         } catch (error) {
-            console.warn("Session storage not accessible or invalid JSON.", error);
+            console.warn("Local storage not accessible or invalid JSON.", error);
             return null;
         }
     });
 
-    // Load current user from sessionStorage with error handling
     const [current_user, setCurrentUser] = useState(() => {
         try {
-            const storedUser = sessionStorage.getItem("user");
-            return storedUser ? JSON.parse(storedUser) : null;
+            return JSON.parse(localStorage.getItem("user")) || null;
         } catch (error) {
-            console.warn("Session storage not accessible or invalid JSON.", error);
+            console.warn("Local storage not accessible or invalid JSON.", error);
             return null;
         }
     });
 
     const [loading, setLoading] = useState(true);
 
-    // Fetch the current user from the backend using the stored authToken
+    // ✅ Fetch the current user from the backend
     const fetchCurrentUser = useCallback(() => {
         if (!authToken) {
             console.log("No authToken found, skipping user fetch.");
@@ -47,25 +42,19 @@ export default function UserProvider({ children }) {
             },
             credentials: "include",
         })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch user data.");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                if (data.data) {
-                    setCurrentUser(data.data);
-                    sessionStorage.setItem("user", JSON.stringify(data.data));
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching user:", error);
-                logout(); // Logout on failed fetch
-            });
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.data) {
+                setCurrentUser(data.data);
+                localStorage.setItem("user", JSON.stringify(data.data));
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching user:", error);
+        });
     }, [authToken]);
 
-    // Add a new user during registration
+    // ✅ Define the missing `addUser` function
     const addUser = async (firstName, lastName, email, password, role) => {
         try {
             const response = await fetch("http://127.0.0.1:5000/register", {
@@ -91,7 +80,7 @@ export default function UserProvider({ children }) {
         }
     };
 
-    // Handle user login for both Admin and Student roles
+    // ✅ Login function
     const login = async (email, password, role) => {
         try {
             const loginEndpoint = role.toLowerCase() === 'admin'
@@ -108,16 +97,15 @@ export default function UserProvider({ children }) {
             });
     
             const data = await response.json();
-    
+
             if (response.ok) {
                 setAuthToken(data.access_token);
                 setCurrentUser(data);
-                sessionStorage.setItem("token", data.access_token);
-                sessionStorage.setItem("user", JSON.stringify(data));
-    
+                localStorage.setItem("token", JSON.stringify(data.access_token));
+                localStorage.setItem("user", JSON.stringify(data));
+
                 toast.success("Login successful!");
-    
-                // Redirect based on role
+
                 if (data.role === "admin") {
                     navigate("/admin");
                 } else if (data.role === "student") {
@@ -132,9 +120,8 @@ export default function UserProvider({ children }) {
             toast.error("Failed to connect to the server. Please try again.");
         }
     };
-    
 
-    // Initiate Google Login
+    // ✅ Google Login
     const googleLogin = async () => {
         try {
             window.location.href = "http://127.0.0.1:5000/google_login";
@@ -144,12 +131,12 @@ export default function UserProvider({ children }) {
         }
     };
 
-    // Handle user logout
+    // ✅ Logout function
     const logout = () => {
         setAuthToken(null);
         setCurrentUser(null);
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         toast.success("Logged out successfully!");
         navigate("/login");
     };
