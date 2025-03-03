@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { FcGoogle } from 'react-icons/fc';
-import { handleGoogleSignIn } from '../authService';  // ✅ Import the correct function
+import { handleGoogleSignIn } from '../authService';  // Ensure this function triggers the Firebase Google Sign-In flow
 
 export default function Register() {
   const { addUser } = useContext(UserContext);
@@ -28,7 +28,7 @@ export default function Register() {
   // Handle Google Sign-Up
   const handleGoogleSignUp = async () => {
     try {
-      await handleGoogleSignIn();  // ✅ Corrected function call
+      await handleGoogleSignIn();  // This should trigger the Firebase Google sign-in and backend validation flow
       setMessage('Signed up successfully with Google!');
     } catch (error) {
       console.error('Google Sign-Up Failed:', error);
@@ -128,7 +128,6 @@ export default function Register() {
             Sign Up with Google
           </button>
         </div>
-
       </form>
     </div>
   );

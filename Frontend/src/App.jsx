@@ -12,6 +12,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserProvider, { UserContext } from "./context/UserContext";
 import ErrorBoundary from "./components/ErrorBoundary";
+import UserProfile from "./components/UserProfile";
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                             <Route path="/" element={<Home />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Signup />} />
+                            <Route path="/profile" element={<UserProfile />} />
                             <Route
                                 path="/admin"
                                 element={

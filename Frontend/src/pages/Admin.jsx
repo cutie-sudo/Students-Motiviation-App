@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,9 +40,7 @@ const Admin = () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/categories", {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
       const data = await response.json();
       setCategories(data);
@@ -54,9 +53,7 @@ const Admin = () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/content", {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
       const data = await response.json();
       setContents(data);
@@ -65,10 +62,10 @@ const Admin = () => {
     }
   };
 
-  // User Management
+  // User Management Functions
   const handleAddUser = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/register", {
+      const response = await fetch("http://127.0.0.1:5000/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,10 +83,12 @@ const Admin = () => {
       if (response.ok) {
         toast.success("User added successfully!");
       } else {
-        toast.error("Failed to add user.");
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to add user.");
       }
     } catch (error) {
       console.error("Error adding user:", error);
+      toast.error("Failed to connect to the server.");
     }
   };
 
@@ -107,10 +106,11 @@ const Admin = () => {
       }
     } catch (error) {
       console.error("Error deactivating user:", error);
+      toast.error("Failed to connect to the server.");
     }
   };
 
-  // Category Management
+  // Category Management Functions
   const handleCreateCategory = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/categories", {
@@ -124,7 +124,7 @@ const Admin = () => {
 
       if (response.ok) {
         toast.success("Category created successfully!");
-        setNewCategory(""); 
+        setNewCategory("");
         fetchCategories();
       } else {
         toast.error("Failed to create category.");
@@ -138,9 +138,7 @@ const Admin = () => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/categories/${categoryId}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
 
       if (response.ok) {
@@ -154,29 +152,7 @@ const Admin = () => {
     }
   };
 
-  // Helper function to remove content
-  const handleRemoveContent = async (contentId) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-
-      if (response.ok) {
-        toast.success("Content removed successfully!");
-        fetchContents(); // Refresh the content list to update UI
-      } else {
-        toast.error("Failed to remove content.");
-      }
-    } catch (error) {
-      console.error("Error removing content:", error);
-      toast.error("An error occurred while removing the content.");
-    }
-  };
-
-  // Content Management
+  // Content Management Functions
   const handlePostContent = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/content", {
@@ -205,14 +181,30 @@ const Admin = () => {
     }
   };
 
-  // Approve Content Function
+  const handleRemoveContent = async (contentId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      if (response.ok) {
+        toast.success("Content removed successfully!");
+        fetchContents();
+      } else {
+        toast.error("Failed to remove content.");
+      }
+    } catch (error) {
+      console.error("Error removing content:", error);
+      toast.error("An error occurred while removing the content.");
+    }
+  };
+
   const handleApproveContent = async (contentId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/approve`, {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
 
       if (response.ok) {
@@ -226,19 +218,15 @@ const Admin = () => {
     }
   };
 
-  // Edit Content Function (placeholder)
   const handleEditContent = (contentId) => {
     console.log("Editing content with ID:", contentId);
   };
 
-  // Like Content Function
   const handleLikeContent = async (contentId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/like`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
 
       if (response.ok) {
@@ -252,14 +240,11 @@ const Admin = () => {
     }
   };
 
-  // Dislike Content Function
   const handleDislikeContent = async (contentId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/dislike`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
 
       if (response.ok) {
@@ -273,14 +258,11 @@ const Admin = () => {
     }
   };
 
-  // Flag Content Function
   const handleFlagContent = async (contentId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/flag`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
 
       if (response.ok) {
@@ -294,8 +276,12 @@ const Admin = () => {
     }
   };
 
-  // Comment on Content Function
+  // Added missing handleCommentContent for review management
   const handleCommentContent = async (contentId) => {
+    if (!comment.trim()) {
+      toast.error("Comment cannot be empty.");
+      return;
+    }
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/comment`, {
         method: "POST",
@@ -305,25 +291,36 @@ const Admin = () => {
         },
         body: JSON.stringify({ comment }),
       });
-
       if (response.ok) {
         toast.success("Comment added successfully!");
         setComment("");
         fetchContents();
       } else {
-        toast.error("Failed to add comment.");
+        const errorData = await response.json();
+        toast.error(errorData.message || "Failed to add comment.");
       }
     } catch (error) {
       console.error("Error adding comment:", error);
+      toast.error("Error adding comment. Please try again.");
     }
   };
 
   return (
     <div className="admin-dashboard">
+      {/* Admin Page Header */}
       <h1 className="dashboard-title">Admin Dashboard</h1>
 
+      {/* Profile Button Below Title (Right Aligned) */}
+      <div style={{ display: "flex", justifyContent: "flex-end", margin: "10px 0" }}>
+        <Link to="/profile" className="profile-button">
+          My Profile
+        </Link>
+      </div>
+
       <div className="dashboard-container">
-        {/* User Management Section */}
+        {/* ---------------------------- */}
+        {/* User Management Section     */}
+        {/* ---------------------------- */}
         <section className="dashboard-section user-management">
           <h2 className="section-title">User Management</h2>
           <input
@@ -356,22 +353,18 @@ const Admin = () => {
             className="input-field"
           />
           <div className="button-group">
-            <button
-              onClick={handleAddUser}
-              className="action-button add"
-            >
+            <button onClick={handleAddUser} className="action-button add">
               Add User
             </button>
-            <button
-              onClick={handleDeactivateUser}
-              className="action-button deactivate"
-            >
+            <button onClick={handleDeactivateUser} className="action-button deactivate">
               Deactivate User
             </button>
           </div>
         </section>
 
+        {/* ---------------------------- */}
         {/* Category Management Section */}
+        {/* ---------------------------- */}
         <section className="dashboard-section category-management">
           <h2 className="section-title">Category Management</h2>
           <input
@@ -382,18 +375,12 @@ const Admin = () => {
             className="input-field"
           />
           <div className="button-group">
-            <button
-              onClick={handleCreateCategory}
-              className="action-button add"
-            >
+            <button onClick={handleCreateCategory} className="action-button add">
               Create Category
             </button>
           </div>
           <div className="category-dropdown">
-            <button
-              onClick={() => setShowCategories(!showCategories)}
-              className="dropdown-toggle"
-            >
+            <button onClick={() => setShowCategories(!showCategories)} className="dropdown-toggle">
               {showCategories ? "Hide Categories" : "Show Categories"}
             </button>
             {showCategories && (
@@ -414,7 +401,9 @@ const Admin = () => {
           </div>
         </section>
 
-        {/* Content Management Section */}
+        {/* ---------------------------- */}
+        {/* Content Management Section  */}
+        {/* ---------------------------- */}
         <section className="dashboard-section content-management">
           <h2 className="section-title">Content Management</h2>
           <input
@@ -424,7 +413,7 @@ const Admin = () => {
             onChange={(e) => setContentTitle(e.target.value)}
             className="input-field"
           />
-         <select
+          <select
             value={contentType}
             onChange={(e) => setContentType(e.target.value)}
             className="input-field"
@@ -453,17 +442,16 @@ const Admin = () => {
             className="input-field"
           />
           <div className="button-group">
-            <button
-              onClick={handlePostContent}
-              className="action-button add"
-            >
+            <button onClick={handlePostContent} className="action-button add">
               Post Content
             </button>
           </div>
         </section>
 
-       {/* Review Management Section */}
-       <section className="dashboard-section review-management">
+        {/* ---------------------------- */}
+        {/* Review Management Section   */}
+        {/* ---------------------------- */}
+        <section className="dashboard-section review-management">
           <h2 className="section-title">Review Content</h2>
           <div className="review-grid">
             {contents.map((content) => (
@@ -489,40 +477,22 @@ const Admin = () => {
                 <div className="dropdown">
                   <button className="dropdown-button">Actions ▼</button>
                   <div className="dropdown-content">
-                    <button
-                      onClick={() => handleLikeContent(content.id)}
-                      className="action-button like"
-                    >
+                    <button onClick={() => handleLikeContent(content.id)} className="action-button like">
                       Like
                     </button>
-                    <button
-                      onClick={() => handleDislikeContent(content.id)}
-                      className="action-button dislike"
-                    >
+                    <button onClick={() => handleDislikeContent(content.id)} className="action-button dislike">
                       Dislike
                     </button>
-                    <button
-                      onClick={() => handleFlagContent(content.id)}
-                      className="action-button flag"
-                    >
+                    <button onClick={() => handleFlagContent(content.id)} className="action-button flag">
                       Flag
                     </button>
-                    <button
-                      onClick={() => handleRemoveContent(content.id)}
-                      className="action-button remove"
-                    >
+                    <button onClick={() => handleRemoveContent(content.id)} className="action-button remove">
                       Remove
                     </button>
-                    <button
-                      onClick={() => handleApproveContent(content.id)}
-                      className="action-button approve"
-                    >
+                    <button onClick={() => handleApproveContent(content.id)} className="action-button approve">
                       Approve
                     </button>
-                    <button
-                      onClick={() => handleEditContent(content.id)}
-                      className="action-button edit"
-                    >
+                    <button onClick={() => handleEditContent(content.id)} className="action-button edit">
                       Edit
                     </button>
                   </div>

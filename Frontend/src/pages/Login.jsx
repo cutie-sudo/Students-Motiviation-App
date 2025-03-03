@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { auth, provider } from '../firebaseConfig';
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 
 export default function Login() {
   const { login } = useContext(UserContext);
@@ -13,25 +13,19 @@ export default function Login() {
   const [role, setRole] = useState('student'); 
   const [errorMessage, setErrorMessage] = useState('');
 
-  // ✅ Handle normal login (email/password)
+  // Handle normal login (email/password)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await login(email, password, role.toLowerCase());
-
-      // ✅ Redirect based on role
-      if (role === "admin") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/student", { replace: true });
-      }
+      // Redirect based on role is handled inside login
     } catch (error) {
       console.error("Login Error:", error);
       setErrorMessage('Invalid login credentials');
     }
   };
 
-  // ✅ Handle Google Sign-In with backend validation and redirection
+  // Handle Google Sign-In with backend validation and redirection
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -41,7 +35,7 @@ export default function Login() {
       console.log("Google Sign-In Successful:", user);
       console.log("ID Token:", idToken);
 
-      const response = await fetch("http://127.0.0.1:5000/auth/google_login", {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:5000"}/auth/google_login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,16 +48,13 @@ export default function Login() {
       console.log("Backend Response:", data);
 
       if (data.success) {
-        console.log("Login successful:", data);
-
-        // ✅ Store token & user role in localStorage
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("userRole", data.data?.user?.role || "");
-
-        // ✅ Redirect based on user role
-        if (data.data?.user?.role === "admin") {
+        // Store token & user role in localStorage with consistent keys
+        localStorage.setItem("token", data.access_token || data.token);
+        localStorage.setItem("user", JSON.stringify(data.data));
+        // Redirect based on user role
+        if (data.data.role === "admin") {
           navigate("/admin", { replace: true });
-        } else if (data.data?.user?.role === "student") {
+        } else if (data.data.role === "student") {
           navigate("/student", { replace: true });
         } else {
           setErrorMessage("Invalid role received from server.");

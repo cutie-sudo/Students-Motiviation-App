@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // For navigation
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import './Student.css'; 
+import "./Student.css"; 
 
 const Student = () => {
   const [profile, setProfile] = useState({ name: "", email: "", bio: "" });
@@ -11,7 +12,7 @@ const Student = () => {
   const [contentComments, setContentComments] = useState({});
   const [contents, setContents] = useState([]);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem('token'); 
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchContents();
@@ -22,7 +23,7 @@ const Student = () => {
       const response = await fetch("http://127.0.0.1:5000/content", {
         method: "GET",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (!response.ok) {
@@ -36,6 +37,7 @@ const Student = () => {
     }
   };
 
+  // Example placeholder function for creating a profile
   const handleCreateProfile = async () => {
     if (!profile.name || !profile.email) {
       setError("Name and email are required to create a profile.");
@@ -45,8 +47,8 @@ const Student = () => {
       const response = await fetch("http://127.0.0.1:5000/students", {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ ...profile, username: profile.name }),
       });
@@ -69,7 +71,7 @@ const Student = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ category }),
       });
@@ -96,7 +98,7 @@ const Student = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ comment }),
       });
@@ -124,7 +126,7 @@ const Student = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ content }),
       });
@@ -146,7 +148,7 @@ const Student = () => {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/like`, {
         method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (response.ok) {
@@ -166,7 +168,7 @@ const Student = () => {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/dislike`, {
         method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (response.ok) {
@@ -187,11 +189,16 @@ const Student = () => {
 
   return (
     <div className="container">
+      {/* HEADER */}
       <header className="header">
         <h1>TechElevate</h1>
-        <p>Get inspired by the Moringa School community. Access verified tech content, expert interviews, and success stories.</p>
+        <p>
+          Get inspired by the Moringa School community. Access verified tech content, 
+          expert interviews, and success stories.
+        </p>
       </header>
 
+      {/* NAVBAR */}
       <nav className="nav">
         <button className="nav-button active">All</button>
         <button className="nav-button">DevOps</button>
@@ -200,8 +207,17 @@ const Student = () => {
         <button className="nav-button">Backend</button>
       </nav>
 
+      {/* PROFILE BUTTON BELOW NAVBAR */}
+      <div style={{ display: "flex", justifyContent: "flex-end", margin: "10px 0" }}>
+        <Link to="/profile" className="profile-button">
+          My Profile
+        </Link>
+      </div>
+
+      {/* Error Display */}
       {error && <div className="error">{error}</div>}
 
+      {/* CONTENT SECTION */}
       <div className="content-section">
         {/* Recommended Content Section */}
         <section className="recommended-content">
@@ -223,10 +239,18 @@ const Student = () => {
                   <span className="content-duration">{content.duration}</span>
                 </div>
                 <div className="content-actions">
-                  <Button onClick={() => handleLikeContent(content.id)} className="button button-green">Like</Button>
-                  <Button onClick={() => handleDislikeContent(content.id)} className="button button-red">Dislike</Button>
-                  <Button onClick={() => handleAddToWishlist(content.title)} className="button button-purple">Wishlist</Button>
-                  <Button onClick={() => handleSubscribeCategory(content.category)} className="button button-yellow">Subscribe</Button>
+                  <Button onClick={() => handleLikeContent(content.id)} className="button button-green">
+                    Like
+                  </Button>
+                  <Button onClick={() => handleDislikeContent(content.id)} className="button button-red">
+                    Dislike
+                  </Button>
+                  <Button onClick={() => handleAddToWishlist(content.title)} className="button button-purple">
+                    Wishlist
+                  </Button>
+                  <Button onClick={() => handleSubscribeCategory(content.category)} className="button button-yellow">
+                    Subscribe
+                  </Button>
                   <Button onClick={() => handleViewContent(content.content_link)} className="button button-blue">
                     {content.content_type === "video" && "Watch"}
                     {content.content_type === "podcast" && "Listen"}
@@ -240,10 +264,7 @@ const Student = () => {
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                   />
-                  <Button
-                    onClick={() => handleComment(content.id)}
-                    className="button comment-button"
-                  >
+                  <Button onClick={() => handleComment(content.id)} className="button comment-button">
                     Comment
                   </Button>
                 </div>

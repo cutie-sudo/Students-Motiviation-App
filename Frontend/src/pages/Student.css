@@ -199,3 +199,16 @@ body {
     text-align: center;
     margin-bottom: 20px;
 }
+.profile-button {
+    background-color: #27cfec;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .profile-button:hover {
+    background-color: #0062b3;
+  }
+  

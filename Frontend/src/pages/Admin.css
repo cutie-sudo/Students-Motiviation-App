@@ -375,4 +375,16 @@
       margin-top: 5px;
     }
   }
+  .profile-button {
+    background-color: #24a7e8;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    /* Adjust margins or hover effects as needed */
+  }
   
+  .profile-button:hover {
+    background-color: #0056b3;
+  }
