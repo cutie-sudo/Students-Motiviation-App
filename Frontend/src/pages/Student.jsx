@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // For navigation
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import "./Student.css"; 
+import "./Student.css";
 
 const Student = () => {
   const [profile, setProfile] = useState({ name: "", email: "", bio: "" });
@@ -11,24 +11,47 @@ const Student = () => {
   const [wishlist, setWishlist] = useState([]);
   const [contentComments, setContentComments] = useState({});
   const [contents, setContents] = useState([]);
+  const [categories, setCategories] = useState([]); // NEW: holds categories from backend
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [showModal, setShowModal] = useState(false);
+  const [modalContentLink, setModalContentLink] = useState("");
+
   const token = localStorage.getItem("token");
 
+  // Fetch categories & contents on mount
   useEffect(() => {
+    fetchCategories();
     fetchContents();
   }, []);
 
+  // -----------------------------
+  // Fetch categories from backend
+  // -----------------------------
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/categories", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setError("Failed to fetch categories. Please try again later.");
+    }
+  };
+
+  // Fetch all contents from backend
   const fetchContents = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/content", {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+      if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
       setContents(data);
     } catch (error) {
@@ -37,7 +60,7 @@ const Student = () => {
     }
   };
 
-  // Example placeholder function for creating a profile
+  // Create Profile (unchanged)
   const handleCreateProfile = async () => {
     if (!profile.name || !profile.email) {
       setError("Name and email are required to create a profile.");
@@ -55,6 +78,8 @@ const Student = () => {
       if (response.ok) {
         console.log("Profile created:", profile);
         setError(null);
+        setSuccess("Profile created successfully!");
+        setTimeout(() => setSuccess(""), 3000);
       } else {
         const errorData = await response.json();
         setError(errorData.message);
@@ -65,8 +90,13 @@ const Student = () => {
     }
   };
 
+  // Subscribe to a category
   const handleSubscribeCategory = async (category) => {
     try {
+      if (subscribedCategories.includes(category)) {
+        setError(`Already subscribed to ${category}`);
+        return;
+      }
       const response = await fetch("http://127.0.0.1:5000/subscribe", {
         method: "POST",
         headers: {
@@ -76,8 +106,10 @@ const Student = () => {
         body: JSON.stringify({ category }),
       });
       if (response.ok) {
-        setSubscribedCategories((prev) => [...new Set([...prev, category])]);
-        console.log("Subscribed to category:", category);
+        setSubscribedCategories((prev) => [...prev, category]);
+        setSuccess(`Subscribed to ${category}!`);
+        setTimeout(() => setSuccess(""), 3000);
+        setError(null);
       } else {
         const errorData = await response.json();
         setError(errorData.message);
@@ -88,6 +120,7 @@ const Student = () => {
     }
   };
 
+  // Comment on content
   const handleComment = async (contentId) => {
     if (!comment.trim()) {
       setError("Comment cannot be empty.");
@@ -103,11 +136,15 @@ const Student = () => {
         body: JSON.stringify({ comment }),
       });
       if (response.ok) {
-        console.log("Comment added:", comment);
         setContentComments((prev) => ({
           ...prev,
-          [contentId]: [...(prev[contentId] || []), comment],
+          [contentId]: [
+            ...(prev[contentId] || []),
+            { id: Date.now(), text: comment },
+          ],
         }));
+        setSuccess("Comment added!");
+        setTimeout(() => setSuccess(""), 3000);
         setComment("");
         setError(null);
       } else {
@@ -120,19 +157,26 @@ const Student = () => {
     }
   };
 
-  const handleAddToWishlist = async (content) => {
+  // Add content to wishlist
+  const handleAddToWishlist = async (contentTitle) => {
     try {
+      if (wishlist.includes(contentTitle)) {
+        setError("Content already in wishlist");
+        return;
+      }
       const response = await fetch("http://127.0.0.1:5000/wishlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content: contentTitle }),
       });
       if (response.ok) {
-        setWishlist((prev) => [...new Set([...prev, content])]);
-        console.log("Added to wishlist:", content);
+        setWishlist((prev) => [...prev, contentTitle]);
+        setSuccess("Added to wishlist!");
+        setTimeout(() => setSuccess(""), 3000);
+        setError(null);
       } else {
         const errorData = await response.json();
         setError(errorData.message);
@@ -143,16 +187,23 @@ const Student = () => {
     }
   };
 
+  // Like content (updates local like count; assumes backend returns updated likes)
   const handleLikeContent = async (contentId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/like`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
-        console.log("Liked content ID:", contentId);
+        const data = await response.json(); // expected: { likes: newCount }
+        setContents((prev) =>
+          prev.map((content) =>
+            content.id === contentId ? { ...content, likes: data.likes } : content
+          )
+        );
+        setSuccess("Liked!");
+        setTimeout(() => setSuccess(""), 3000);
+        setError(null);
       } else {
         const errorData = await response.json();
         setError(errorData.message);
@@ -163,16 +214,23 @@ const Student = () => {
     }
   };
 
+  // Dislike content (updates local dislike count; assumes backend returns updated dislikes)
   const handleDislikeContent = async (contentId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/dislike`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
-        console.log("Disliked content ID:", contentId);
+        const data = await response.json(); // expected: { dislikes: newCount }
+        setContents((prev) =>
+          prev.map((content) =>
+            content.id === contentId ? { ...content, dislikes: data.dislikes } : content
+          )
+        );
+        setSuccess("Disliked!");
+        setTimeout(() => setSuccess(""), 3000);
+        setError(null);
       } else {
         const errorData = await response.json();
         setError(errorData.message);
@@ -183,96 +241,175 @@ const Student = () => {
     }
   };
 
+  // Modal for viewing content
   const handleViewContent = (link) => {
-    console.log("Viewing content link:", link);
+    setModalContentLink(link);
+    setShowModal(true);
   };
+
+  const handleConfirmView = () => {
+    if (modalContentLink) {
+      window.open(modalContentLink, "_blank", "noopener,noreferrer");
+    }
+    setShowModal(false);
+    setModalContentLink("");
+  };
+
+  const handleCancelView = () => {
+    setShowModal(false);
+    setModalContentLink("");
+  };
+
+  // Category filtering
+  // Now we do an *exact match* on category name for clarity.
+  // If you need partial matches, you can revert to .includes() logic.
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const filteredContents =
+    selectedCategory === "All"
+      ? contents
+      : contents.filter(
+          (item) =>
+            item.category &&
+            item.category.toLowerCase() === selectedCategory.toLowerCase()
+        );
 
   return (
     <div className="container">
       {/* HEADER */}
       <header className="header">
-        <h1>TechElevate</h1>
+        <h1>Student Dashboard</h1>
         <p>
-          Get inspired by the Moringa School community. Access verified tech content, 
-          expert interviews, and success stories.
+          Get inspired by the Moringa School community. Access verified tech content, expert interviews, and success stories.
         </p>
       </header>
 
-      {/* NAVBAR */}
+      {/* NAVIGATION - Dynamically generated categories + 'All' */}
       <nav className="nav">
-        <button className="nav-button active">All</button>
-        <button className="nav-button">DevOps</button>
-        <button className="nav-button">Full Stack</button>
-        <button className="nav-button">Front-End</button>
-        <button className="nav-button">Backend</button>
+        <button
+          className={`nav-button ${selectedCategory === "All" ? "active" : ""}`}
+          onClick={() => handleCategoryClick("All")}
+        >
+          All
+        </button>
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            className={`nav-button ${
+              selectedCategory.toLowerCase() === cat.name.toLowerCase() ? "active" : ""
+            }`}
+            onClick={() => handleCategoryClick(cat.name)}
+          >
+            {cat.name}
+          </button>
+        ))}
       </nav>
 
-      {/* PROFILE BUTTON BELOW NAVBAR */}
+      {/* PROFILE BUTTON */}
       <div style={{ display: "flex", justifyContent: "flex-end", margin: "10px 0" }}>
         <Link to="/profile" className="profile-button">
           My Profile
         </Link>
       </div>
 
-      {/* Error Display */}
+      {/* SUCCESS / ERROR MESSAGES */}
+      {success && <div className="success">{success}</div>}
       {error && <div className="error">{error}</div>}
 
       {/* CONTENT SECTION */}
       <div className="content-section">
-        {/* Recommended Content Section */}
-        <section className="recommended-content">
-          {contents.map((content) => (
-            <Card key={content.id} className="content-card">
-              <CardContent>
-                <div className="content-header">
-                  <input type="checkbox" className="content-checkbox" />
-                  <h3 className="content-title">{content.title}</h3>
-                </div>
+        {filteredContents.map((content) => (
+          <Card key={content.id} className="recommended-content">
+            <CardContent>
+              <h3 className="content-title">{content.title}</h3>
+
+              {/* Display summary if present, otherwise fallback to description */}
+              {content.summary ? (
+                <p className="content-summary">{content.summary}</p>
+              ) : (
                 <p className="content-description">{content.description}</p>
-                <div className="content-footer">
-                  <span className="content-author">By {content.author}</span>
-                  <span className="content-type">
-                    {content.content_type === "video" && <span className="icon-video">Video</span>}
-                    {content.content_type === "article" && <span className="icon-article">Article</span>}
-                    {content.content_type === "podcast" && <span className="icon-podcast">Podcast</span>}
-                  </span>
-                  <span className="content-duration">{content.duration}</span>
+              )}
+
+              {/* Display author if present */}
+              {content.author && (
+                <div className="content-author">
+                  <strong>Author:</strong> {content.author}
                 </div>
-                <div className="content-actions">
-                  <Button onClick={() => handleLikeContent(content.id)} className="button button-green">
-                    Like
-                  </Button>
-                  <Button onClick={() => handleDislikeContent(content.id)} className="button button-red">
-                    Dislike
-                  </Button>
-                  <Button onClick={() => handleAddToWishlist(content.title)} className="button button-purple">
-                    Wishlist
-                  </Button>
-                  <Button onClick={() => handleSubscribeCategory(content.category)} className="button button-yellow">
-                    Subscribe
-                  </Button>
-                  <Button onClick={() => handleViewContent(content.content_link)} className="button button-blue">
-                    {content.content_type === "video" && "Watch"}
-                    {content.content_type === "podcast" && "Listen"}
-                    {content.content_type === "note" && "Read"}
-                  </Button>
+              )}
+
+              {/* Display content type & any other info you want */}
+              <div className="content-footer">
+                <span className="content-type">{content.content_type}</span>
+                {/* If you have a duration or other fields in your DB, show them here */}
+                {content.duration && (
+                  <span className="content-duration">Duration: {content.duration}</span>
+                )}
+              </div>
+
+              <div className="content-actions">
+                <Button onClick={() => handleLikeContent(content.id)} className="button button-green">
+                  Like {content.likes ? `(${content.likes})` : ""}
+                </Button>
+                <Button onClick={() => handleDislikeContent(content.id)} className="button button-red">
+                  Dislike {content.dislikes ? `(${content.dislikes})` : ""}
+                </Button>
+                <Button onClick={() => handleAddToWishlist(content.title)} className="button button-purple">
+                  Wishlist
+                </Button>
+                <Button onClick={() => handleSubscribeCategory(content.category)} className="button button-yellow">
+                  Subscribe
+                </Button>
+                <Button onClick={() => handleViewContent(content.content_link)} className="button button-blue">
+                  {content.content_type === "video"
+                    ? "Watch"
+                    : content.content_type === "podcast"
+                    ? "Listen"
+                    : "View"}
+                </Button>
+              </div>
+
+              <div className="comment-input">
+                <input
+                  type="text"
+                  placeholder="Add a comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+                <Button onClick={() => handleComment(content.id)} className="button comment-button">
+                  Comment
+                </Button>
+              </div>
+              {contentComments[content.id] && (
+                <div className="comments">
+                  {contentComments[content.id].map((comm) => (
+                    <p key={comm.id}>{comm.text}</p>
+                  ))}
                 </div>
-                <div className="comment-input">
-                  <input
-                    type="text"
-                    placeholder="Add a comment"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  />
-                  <Button onClick={() => handleComment(content.id)} className="button comment-button">
-                    Comment
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </section>
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
+
+      {/* MODAL POPUP FOR VIEWING CONTENT */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>View Content</h2>
+            <p>Are you sure you want to open this content?</p>
+            <div className="modal-buttons">
+              <Button onClick={handleConfirmView} className="confirm-button">
+                Yes
+              </Button>
+              <Button onClick={handleCancelView} className="cancel-button">
+                No
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

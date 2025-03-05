@@ -7,6 +7,11 @@ import "./Admin.css";
 
 const Admin = () => {
   const { authToken } = useContext(UserContext);
+  console.log("Auth token:", authToken); // Debugging token
+
+  // -------------------------------
+  // Existing State & Logic (unchanged)
+  // -------------------------------
 
   // User Management
   const [username, setUsername] = useState("");
@@ -21,21 +26,35 @@ const Admin = () => {
 
   // Content Management
   const [contentTitle, setContentTitle] = useState("");
-  const [contentDescription, setContentDescription] = useState("");
+  // Removed contentDescription input field if not needed
   const [contentType, setContentType] = useState("video");
   const [contentLink, setContentLink] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [contents, setContents] = useState([]);
+  // New fields for summary and author
+  const [summary, setSummary] = useState("");
+  const [author, setAuthor] = useState("");
 
   // Review Management
   const [comment, setComment] = useState("");
 
+  // -------------------------------
+  // NEW: Sidebar Toggle & Active Section
+  // -------------------------------
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeSection, setActiveSection] = useState("");
+
+  // -------------------------------
+  // Fetch data on mount
+  // -------------------------------
   useEffect(() => {
     fetchCategories();
     fetchContents();
   }, [authToken]);
 
-  // Fetch Functions
+  // --------------------------
+  // Fetch Functions (unchanged)
+  // --------------------------
   const fetchCategories = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/categories", {
@@ -62,7 +81,9 @@ const Admin = () => {
     }
   };
 
-  // User Management Functions
+  // ---------------------------
+  // User Management Functions (unchanged)
+  // ---------------------------
   const handleAddUser = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/auth/signup", {
@@ -94,10 +115,13 @@ const Admin = () => {
 
   const handleDeactivateUser = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/users/${userId}/deactivate`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const response = await fetch(
+        `http://127.0.0.1:5000/users/${userId}/deactivate`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
 
       if (response.ok) {
         toast.success("User deactivated successfully!");
@@ -110,7 +134,9 @@ const Admin = () => {
     }
   };
 
-  // Category Management Functions
+  // ---------------------------
+  // Category Management Functions (unchanged)
+  // ---------------------------
   const handleCreateCategory = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/categories", {
@@ -152,7 +178,9 @@ const Admin = () => {
     }
   };
 
-  // Content Management Functions
+  // ---------------------------
+  // Content Management Functions (updated)
+  // ---------------------------
   const handlePostContent = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/content", {
@@ -163,7 +191,9 @@ const Admin = () => {
         },
         body: JSON.stringify({
           title: contentTitle,
-          description: contentDescription,
+          // Send the new summary and author fields
+          summary: summary,
+          author: author,
           category_id: selectedCategory,
           content_type: contentType,
           content_link: contentLink,
@@ -276,7 +306,9 @@ const Admin = () => {
     }
   };
 
-  // Added missing handleCommentContent for review management
+  // ---------------------------
+  // Review Management Function (unchanged)
+  // ---------------------------
   const handleCommentContent = async (contentId) => {
     if (!comment.trim()) {
       toast.error("Comment cannot be empty.");
@@ -307,182 +339,244 @@ const Admin = () => {
 
   return (
     <div className="admin-dashboard">
-      {/* Admin Page Header */}
-      <h1 className="dashboard-title">Admin Dashboard</h1>
-
-      {/* Profile Button Below Title (Right Aligned) */}
-      <div style={{ display: "flex", justifyContent: "flex-end", margin: "10px 0" }}>
-        <Link to="/profile" className="profile-button">
-          My Profile
-        </Link>
+      {/* Top Header with Sidebar Toggle */}
+      <div className="admin-header">
+        {/* Clicking the title resets activeSection to display the landing page */}
+        <h1 className="dashboard-title" onClick={() => setActiveSection("")} style={{ cursor: "pointer" }}>
+          Admin Dashboard
+        </h1>
+        <button
+          className="sidebar-toggle-btn"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          {isSidebarOpen ? "Hide " : "Show"}
+        </button>
       </div>
 
-      <div className="dashboard-container">
-        {/* ---------------------------- */}
-        {/* User Management Section     */}
-        {/* ---------------------------- */}
-        <section className="dashboard-section user-management">
-          <h2 className="section-title">User Management</h2>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="input-field"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input-field"
-          />
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="input-field"
-          >
-            <option value="student">Student</option>
-            <option value="admin">Admin</option>
-          </select>
-          <input
-            type="text"
-            placeholder="User ID to Deactivate"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="input-field"
-          />
-          <div className="button-group">
-            <button onClick={handleAddUser} className="action-button add">
-              Add User
-            </button>
-            <button onClick={handleDeactivateUser} className="action-button deactivate">
-              Deactivate User
-            </button>
-          </div>
-        </section>
+      {/* Main Body: Sidebar + Main Content */}
+      <div className="admin-body">
+        <aside className={`admin-sidebar ${isSidebarOpen ? "open" : "closed"}`}>
+          <ul className="sidebar-links">
+            <li
+              onClick={() => setActiveSection("userManagement")}
+              className={`sidebar-link ${activeSection === "userManagement" ? "active" : ""}`}
+            >
+              User Management
+            </li>
+            <li
+              onClick={() => setActiveSection("categoryManagement")}
+              className={`sidebar-link ${activeSection === "categoryManagement" ? "active" : ""}`}
+            >
+              Category Management
+            </li>
+            <li
+              onClick={() => setActiveSection("contentManagement")}
+              className={`sidebar-link ${activeSection === "contentManagement" ? "active" : ""}`}
+            >
+              Content Management
+            </li>
+            <li
+              onClick={() => setActiveSection("reviewManagement")}
+              className={`sidebar-link ${activeSection === "reviewManagement" ? "active" : ""}`}
+            >
+              Review Management
+            </li>
+          </ul>
+          <Link to="/profile" className="profile-button">
+            My Profile
+          </Link>
+        </aside>
 
-        {/* ---------------------------- */}
-        {/* Category Management Section */}
-        {/* ---------------------------- */}
-        <section className="dashboard-section category-management">
-          <h2 className="section-title">Category Management</h2>
-          <input
-            type="text"
-            placeholder="New Category Name"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            className="input-field"
-          />
-          <div className="button-group">
-            <button onClick={handleCreateCategory} className="action-button add">
-              Create Category
-            </button>
+        <div className="dashboard-container">
+          {/* Landing Page: Visible only if no section is active */}
+          <div style={{ display: activeSection ? "none" : "block" }} className="landing-page">
+            <h2>Welcome!</h2>
+            <p>
+              Empower your learning journey with TechElevate – your central hub for motivational resources.
+              Here, you can manage a vibrant collection of inspiring videos, comprehensive notes, and engaging podcasts,
+              all designed to drive success and fuel your academic passion. Explore, curate, and share content that
+              motivates students to achieve their best.
+            </p>
           </div>
-          <div className="category-dropdown">
-            <button onClick={() => setShowCategories(!showCategories)} className="dropdown-toggle">
-              {showCategories ? "Hide Categories" : "Show Categories"}
-            </button>
-            {showCategories && (
-              <div className="dropdown-list">
-                {categories.map((category) => (
-                  <div key={category.id} className="category-item">
-                    {category.name}
+
+          {/* User Management Section */}
+          <section
+            style={{ display: activeSection === "userManagement" ? "block" : "none" }}
+            className="dashboard-section user-management"
+          >
+            <h2 className="section-title">User Management</h2>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="input-field"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input-field"
+            />
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="input-field"
+            >
+              <option value="student">Student</option>
+              <option value="admin">Admin</option>
+            </select>
+            <input
+              type="text"
+              placeholder="User ID to Deactivate"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="input-field"
+            />
+            <div className="button-group">
+              <button onClick={handleAddUser} className="action-button add">
+                Add User
+              </button>
+              <button onClick={handleDeactivateUser} className="action-button deactivate">
+                Deactivate User
+              </button>
+            </div>
+          </section>
+
+          {/* Category Management Section */}
+          <section
+            style={{ display: activeSection === "categoryManagement" ? "block" : "none" }}
+            className="dashboard-section category-management"
+          >
+            <h2 className="section-title">Category Management</h2>
+            <input
+              type="text"
+              placeholder="New Category Name"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              className="input-field"
+            />
+            <div className="button-group">
+              <button onClick={handleCreateCategory} className="action-button add">
+                Create Category
+              </button>
+            </div>
+            <div className="category-dropdown">
+              <button
+                onClick={() => setShowCategories(!showCategories)}
+                className="dropdown-toggle"
+              >
+                {showCategories ? "Hide Categories" : "Show Categories"}
+              </button>
+              {showCategories && (
+                <div className="dropdown-list">
+                  {categories.map((category) => (
+                    <div key={category.id} className="category-item">
+                      {category.name}
+                      <button
+                        onClick={() => handleRemoveCategory(category.id)}
+                        className="action-button remove-category"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Content Management Section */}
+          <section
+            style={{ display: activeSection === "contentManagement" ? "block" : "none" }}
+            className="dashboard-section content-management"
+          >
+            <h2 className="section-title">Content Management</h2>
+            <input
+              type="text"
+              placeholder="Content Title"
+              value={contentTitle}
+              onChange={(e) => setContentTitle(e.target.value)}
+              className="input-field"
+            />
+            <select
+              value={contentType}
+              onChange={(e) => setContentType(e.target.value)}
+              className="input-field"
+            >
+              <option value="video">Video</option>
+              <option value="podcast">Podcast</option>
+            </select>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="input-field"
+            >
+              <option value="">Choose Category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              placeholder="Content Link"
+              value={contentLink}
+              onChange={(e) => setContentLink(e.target.value)}
+              className="input-field"
+            />
+            {/* New input for short summary */}
+            <input
+              type="text"
+              placeholder="Short Summary"
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              className="input-field"
+            />
+            {/* New input for author */}
+            <input
+              type="text"
+              placeholder="Author"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              className="input-field"
+            />
+            <div className="button-group">
+              <button onClick={handlePostContent} className="action-button add">
+                Post Content
+              </button>
+            </div>
+          </section>
+
+          {/* Review Management Section */}
+          <section
+            style={{ display: activeSection === "reviewManagement" ? "block" : "none" }}
+            className="dashboard-section review-management"
+          >
+            <h2 className="section-title">Review Content</h2>
+            <div className="review-grid">
+              {contents.map((content) => (
+                <div key={content.id} className="review-card">
+                  <h3 className="review-title">{content.title}</h3>
+                  <p className="review-description">{content.description}</p>
+                  <div className="comment-section">
+                    <input
+                      type="text"
+                      placeholder="Add a comment"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      className="input-field"
+                    />
                     <button
-                      onClick={() => handleRemoveCategory(category.id)}
-                      className="action-button remove-category"
+                      onClick={() => handleCommentContent(content.id)}
+                      className="action-button comment"
                     >
-                      Delete
+                      Comment
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* ---------------------------- */}
-        {/* Content Management Section  */}
-        {/* ---------------------------- */}
-        <section className="dashboard-section content-management">
-          <h2 className="section-title">Content Management</h2>
-          <input
-            type="text"
-            placeholder="Content Title"
-            value={contentTitle}
-            onChange={(e) => setContentTitle(e.target.value)}
-            className="input-field"
-          />
-          <select
-            value={contentType}
-            onChange={(e) => setContentType(e.target.value)}
-            className="input-field"
-          >
-            <option value="video">Video</option>
-            <option value="note">Note</option>
-            <option value="podcast">Podcast</option>
-          </select>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="input-field"
-          >
-            <option value="">Choose Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            placeholder="Content Link"
-            value={contentLink}
-            onChange={(e) => setContentLink(e.target.value)}
-            className="input-field"
-          />
-          <div className="button-group">
-            <button onClick={handlePostContent} className="action-button add">
-              Post Content
-            </button>
-          </div>
-        </section>
-
-        {/* ---------------------------- */}
-        {/* Review Management Section   */}
-        {/* ---------------------------- */}
-        <section className="dashboard-section review-management">
-          <h2 className="section-title">Review Content</h2>
-          <div className="review-grid">
-            {contents.map((content) => (
-              <div key={content.id} className="review-card">
-                <h3 className="review-title">{content.title}</h3>
-                <p className="review-description">{content.description}</p>
-
-                <div className="comment-section">
-                  <input
-                    type="text"
-                    placeholder="Add a comment"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="input-field"
-                  />
-                  <button
-                    onClick={() => handleCommentContent(content.id)}
-                    className="action-button comment"
-                  >
-                    Comment
-                  </button>
-                </div>
-                <div className="dropdown">
-                  <button className="dropdown-button">Actions ▼</button>
-                  <div className="dropdown-content">
-                    <button onClick={() => handleLikeContent(content.id)} className="action-button like">
-                      Like
-                    </button>
-                    <button onClick={() => handleDislikeContent(content.id)} className="action-button dislike">
-                      Dislike
-                    </button>
+                  <div className="review-actions">
                     <button onClick={() => handleFlagContent(content.id)} className="action-button flag">
                       Flag
                     </button>
@@ -497,10 +591,10 @@ const Admin = () => {
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

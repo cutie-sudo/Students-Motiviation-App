@@ -24,29 +24,44 @@ const Navbar = () => {
   return (
     <>
       <nav className="p-4 flex items-center justify-between bg-gradient-to-r from-blue-600 to-cyan-500 shadow-md">
-        {/* Left Side: Project Name */}
-        <h1 className="text-white text-[64px] font-semibold font-['Oswald'] ml-6">
-          TechElevate
-        </h1>
+        {/* Left Side: Project Name as a clickable Link to home */}
+        <Link to="/" className="ml-6">
+          <h1 className="text-white text-[64px] font-semibold font-['Oswald'] cursor-pointer">
+            TechElevate
+          </h1>
+        </Link>
 
         {/* Right Side: Navigation Links */}
         <ul className="flex space-x-6 items-center mr-6">
-          <li className="border border-white rounded-[10px] p-2">
-            <Link className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-600 px-4 py-2 rounded transition duration-300" to="/">
-              Home
-            </Link>
-          </li>
-
           {isLoggedIn ? (
             <>
-              {/* ✅ Show User's First Name (If Available) */}
-              <li className="text-white text-[24px] font-light font-['Oswald']">
-                Welcome, {current_user?.firstName || "User"}!
-              </li>
+
+              {/* Conditionally render Admin/Student page button */}
+              {current_user && current_user.role === "admin" && (
+                <li className="border border-white rounded-[10px] p-2">
+                  <Link
+                    className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300"
+                    to="/admin"
+                  >
+                    Admin Page
+                  </Link>
+                </li>
+              )}
+              {current_user && current_user.role === "student" && (
+                <li className="border border-white rounded-[10px] p-2">
+                  <Link
+                    className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300"
+                    to="/student"
+                  >
+                    Student Page
+                  </Link>
+                </li>
+              )}
+
               <li className="border border-white rounded-[10px] p-2">
                 <button 
                   onClick={handleLogout}
-                  className="bg-cyan-500 text-white text-[23px] font-light font-['Oswald'] px-4 py-2  hover:bg-blue-600 rounded transition duration-300"
+                  className="bg-cyan-500 text-white text-[23px] font-light font-['Oswald'] px-4 py-2 hover:bg-blue-600 rounded transition duration-300"
                 >
                   Logout
                 </button>
@@ -55,12 +70,18 @@ const Navbar = () => {
           ) : (
             <>
               <li className="border border-white rounded-[10px] p-2">
-                <Link className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300" to="/login">
+                <Link
+                  className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300"
+                  to="/login"
+                >
                   Login
                 </Link>
               </li>
               <li className="border border-white rounded-[10px] p-2">
-                <Link className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300" to="/signup">
+                <Link
+                  className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300"
+                  to="/signup"
+                >
                   Sign Up
                 </Link>
               </li>
