@@ -57,6 +57,11 @@ const Navbar = () => {
                   </Link>
                 </li>
               )}
+                   <li className="border border-white rounded-[10px] p-2">
+            <Link
+            className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300"
+            to="/blog">Blog</Link> {/* New Blog Link */}
+          </li>
 
               <li className="border border-white rounded-[10px] p-2">
                 <button 
@@ -85,6 +90,7 @@ const Navbar = () => {
                   Sign Up
                 </Link>
               </li>
+           
               {/* Search Button Component */}
               <li className="nav-item relative flex items-center border border-gray-300 rounded-full bg-white px-4 py-2">
                 <input

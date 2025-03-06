@@ -156,7 +156,7 @@ const Student = () => {
     }
   };
 
-  const handleAddToWishlist = async (contentTitle) => {
+  const handleAddToWishlist = async (contentId, contentTitle) => {
     try {
       if (wishlist.includes(contentTitle)) {
         setError("Content already in wishlist");
@@ -168,7 +168,9 @@ const Student = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content: contentTitle }),
+        body: JSON.stringify({
+          post_id: contentId 
+        }),
       });
       if (response.ok) {
         setWishlist((prev) => [...prev, contentTitle]);
@@ -222,14 +224,14 @@ const Student = () => {
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
   };
-
+  console.log(contents)
   const filteredContents =
     selectedCategory === "All"
       ? contents
       : contents.filter(
           (item) =>
-            item.category &&
-            item.category.toLowerCase() === selectedCategory.toLowerCase()
+            item.title &&
+            item.title.toLowerCase() === selectedCategory.toLowerCase()
         );
 
   return (
@@ -294,7 +296,7 @@ const Student = () => {
                 <Button onClick={() => handleDislikeContent(content.id)} className="button button-red">
                   Dislike ({dislikes[content.id] || 0})
                 </Button>
-                <Button onClick={() => handleAddToWishlist(content.title)} className="button button-purple">
+                <Button onClick={() => handleAddToWishlist(content.id, content.title)} className="button button-purple">
                   Wishlist
                 </Button>
                 <Button onClick={() => handleSubscribeCategory(content.category)} className="button button-yellow">

@@ -7,7 +7,7 @@ import "./Admin.css";
 
 const Admin = () => {
   const { authToken } = useContext(UserContext);
-  console.log("Auth token:", authToken); // Debugging token
+  // console.log("Auth token:", authToken); // Debugging token
 
   // Existing State & Logic (unchanged)
 
@@ -292,35 +292,7 @@ const Admin = () => {
     }
   };
 
-  // Review Management Function (unchanged)
-  const handleCommentContent = async (contentId) => {
-    if (!comment.trim()) {
-      toast.error("Comment cannot be empty.");
-      return;
-    }
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/comment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ comment }),
-      });
-      if (response.ok) {
-        toast.success("Comment added successfully!");
-        setComment("");
-        fetchContents();
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Failed to add comment.");
-      }
-    } catch (error) {
-      console.error("Error adding comment:", error);
-      toast.error("Error adding comment. Please try again.");
-    }
-  };
-
+  
   return (
     <div className="admin-dashboard">
       {/* Top Header with Sidebar Toggle */}
@@ -545,21 +517,7 @@ const Admin = () => {
                 <div key={content.id} className="review-card">
                   <h3 className="review-title">{content.title}</h3>
                   <p className="review-description">{content.description}</p>
-                  <div className="comment-section">
-                    <input
-                      type="text"
-                      placeholder="Add a comment"
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      className="input-field"
-                    />
-                    <button
-                      onClick={() => handleCommentContent(content.id)}
-                      className="action-button comment"
-                    >
-                      Comment
-                    </button>
-                  </div>
+                 
                   <div className="review-actions">
                     <button onClick={() => handleFlagContent(content.id)} className="action-button flag">
                       Flag

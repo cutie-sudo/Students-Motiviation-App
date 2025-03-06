@@ -13,6 +13,8 @@ import "react-toastify/dist/ReactToastify.css";
 import UserProvider, { UserContext } from "./context/UserContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import UserProfile from "./components/UserProfile";
+import Blog from "./pages/Blog";
+import Wishlist from "./pages/Wishlist";
 
 function App() {
     return (
@@ -27,6 +29,10 @@ function App() {
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/profile" element={<UserProfile />} />
+                            <Route path="/blog" element={<Blog />} />
+                            <Route path="/wishlist" element={<Wishlist />} />
+
+
                             <Route
                                 path="/admin"
                                 element={
