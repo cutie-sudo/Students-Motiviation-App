@@ -11,7 +11,7 @@ const Student = () => {
   const [wishlist, setWishlist] = useState([]);
   const [contentComments, setContentComments] = useState({});
   const [contents, setContents] = useState([]);
-  const [categories, setCategories] = useState([]); // NEW: holds categories from backend
+  const [categories, setCategories] = useState([]); 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -26,9 +26,7 @@ const Student = () => {
     fetchContents();
   }, []);
 
-  // -----------------------------
-  // Fetch categories from backend
-  // -----------------------------
+  // Fetch subscribed categories on mount
   const fetchCategories = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/categories", {
@@ -187,7 +185,7 @@ const Student = () => {
     }
   };
 
-  // Like content (updates local like count; assumes backend returns updated likes)
+  // Like content (updates local like counts)
   const handleLikeContent = async (contentId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/like`, {
@@ -195,7 +193,7 @@ const Student = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
-        const data = await response.json(); // expected: { likes: newCount }
+        const data = await response.json();
         setContents((prev) =>
           prev.map((content) =>
             content.id === contentId ? { ...content, likes: data.likes } : content
@@ -214,7 +212,7 @@ const Student = () => {
     }
   };
 
-  // Dislike content (updates local dislike count; assumes backend returns updated dislikes)
+  // Dislike content (updates local dislike count)
   const handleDislikeContent = async (contentId) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/dislike`, {
@@ -222,7 +220,7 @@ const Student = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
-        const data = await response.json(); // expected: { dislikes: newCount }
+        const data = await response.json(); 
         setContents((prev) =>
           prev.map((content) =>
             content.id === contentId ? { ...content, dislikes: data.dislikes } : content
@@ -261,8 +259,6 @@ const Student = () => {
   };
 
   // Category filtering
-  // Now we do an *exact match* on category name for clarity.
-  // If you need partial matches, you can revert to .includes() logic.
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
   };
@@ -286,7 +282,7 @@ const Student = () => {
         </p>
       </header>
 
-      {/* NAVIGATION - Dynamically generated categories + 'All' */}
+      {/* NAVIGATION */}
       <nav className="nav">
         <button
           className={`nav-button ${selectedCategory === "All" ? "active" : ""}`}
@@ -325,7 +321,6 @@ const Student = () => {
             <CardContent>
               <h3 className="content-title">{content.title}</h3>
 
-              {/* Display summary if present, otherwise fallback to description */}
               {content.summary ? (
                 <p className="content-summary">{content.summary}</p>
               ) : (
@@ -339,10 +334,9 @@ const Student = () => {
                 </div>
               )}
 
-              {/* Display content type & any other info you want */}
+              {/* Display content type */}
               <div className="content-footer">
                 <span className="content-type">{content.content_type}</span>
-                {/* If you have a duration or other fields in your DB, show them here */}
                 {content.duration && (
                   <span className="content-duration">Duration: {content.duration}</span>
                 )}

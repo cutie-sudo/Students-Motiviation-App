@@ -1,6 +1,4 @@
-/* -----------------------------------------------------
-   Global & Body
------------------------------------------------------- */
+/* Global & Body */
 body {
     font-family: Arial, sans-serif;
     background: #f5f5f5;
@@ -16,9 +14,7 @@ body {
     padding: 20px;
   }
   
-  /* -----------------------------------------------------
-     Header
-  ------------------------------------------------------ */
+  /* Header  */
   .header {
     text-align: center;
     margin-bottom: 20px;
@@ -34,9 +30,7 @@ body {
     color: #666;
   }
   
-  /* -----------------------------------------------------
-     Navigation (Category Filters)
-  ------------------------------------------------------ */
+  /*  Navigation (Category Filters) */
   .nav {
     display: flex;
     justify-content: center;
@@ -61,9 +55,7 @@ body {
     color: #fff;
   }
   
-  /* -----------------------------------------------------
-     Profile Button
-  ------------------------------------------------------ */
+  /*  Profile Button */
   .profile-button {
     background-color: #27cfec;
     color: #fff;
@@ -78,18 +70,14 @@ body {
     background-color: #0062b3;
   }
   
-  /* -----------------------------------------------------
-     Error Messages
-  ------------------------------------------------------ */
+  /*  Error Messages */
   .error {
     color: #dc3545;
     text-align: center;
     margin-bottom: 20px;
   }
   
-  /* -----------------------------------------------------
-     Content Section
-  ------------------------------------------------------ */
+  /*  Content Section */
   .content-section {
     display: grid;
     grid-template-columns: 1fr;
@@ -159,9 +147,7 @@ body {
     margin-left: auto;
   }
   
-  /* -----------------------------------------------------
-     Actions & Buttons
-  ------------------------------------------------------ */
+  /*  Actions & Buttons */
   .content-actions {
     display: flex;
     align-items: center;
@@ -237,9 +223,7 @@ body {
     background: #0056b3;
   }
   
-  /* -----------------------------------------------------
-     Dropdown Styles for Action Buttons (Except Watch/Listen)
-  ------------------------------------------------------ */
+  /*   Dropdown Styles for Action Buttons (Except Watch/Listen) */
   .action-dropdown {
     position: relative;
     display: inline-block;
@@ -294,9 +278,7 @@ body {
     transform: scale(1.1);
   }
   
-  /* -----------------------------------------------------
-     Modal Styles (for viewing content confirmation)
-  ------------------------------------------------------ */
+  /*  Modal Styles (for viewing content confirmation) */
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -354,9 +336,7 @@ body {
     background-color: #757575;
   }
   
-  /* -----------------------------------------------------
-     Animations
-  ------------------------------------------------------ */
+  /*  Animations */
   @keyframes fadeInUp {
     from {
       opacity: 0;

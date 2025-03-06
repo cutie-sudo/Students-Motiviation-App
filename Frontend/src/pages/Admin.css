@@ -1,6 +1,4 @@
-/* =========================================
-   CSS Variables for Consistent Styling
-   ========================================= */
+/*  CSS Variables for Consistent Styling  */
    :root {
     --primary-color: #00bcd4;
     --secondary-color: #0097a7;
@@ -15,9 +13,7 @@
     --admin-dashboard-title-color: #333;
   }
   
-  /* =========================================
-     Base & Global Styles
-     ========================================= */
+  /*  Base & Global Styles  */
   body {
     font-family: 'Arial', sans-serif;
     background-color: var(--background-color);
@@ -29,9 +25,7 @@
     flex-direction: column;
   }
   
-  /* =========================================
-     Admin Dashboard Container
-     ========================================= */
+  /*  Admin Dashboard Container  */
   .admin-dashboard {
     padding: var(--padding);
     background-color: var(--background-color);
@@ -41,9 +35,7 @@
     align-items: center;
   }
   
-  /* =========================================
-     Header (Title + Toggle Button)
-     ========================================= */
+  /*  Header (Title + Toggle Button)  */
   .admin-header {
     position: relative;
     text-align: center;
@@ -81,9 +73,7 @@
     background-color: #e0e0e0;
   }
   
-  /* =========================================
-     Main Body: Sidebar + Main Content
-     ========================================= */
+  /*  Main Body: Sidebar + Main Content  */
   .admin-body {
     display: flex;
     flex: 1;
@@ -92,9 +82,7 @@
     box-sizing: border-box;
   }
   
-  /* =========================================
-     Collapsible Sidebar
-     ========================================= */
+  /*  Collapsible Sidebar */
   .admin-sidebar {
     width: 250px;
     background-color: #f7f7f7;
@@ -135,9 +123,7 @@
     background-color: #e8e8e8;
   }
   
-  /* =========================================
-     Main Content Container
-     ========================================= */
+  /*  Main Content Container  */
   .dashboard-container {
     display: flex;
     flex-direction: column;
@@ -148,9 +134,7 @@
     box-sizing: border-box;
   }
   
-  /* =========================================
-     Landing Page (when no section is selected)
-     ========================================= */
+  /*  Landing Page (when no section is selected)  */
   .landing-page {
     text-align: center;
     margin: 2rem auto;
@@ -215,9 +199,7 @@
     }
   }
   
-  /* =========================================
-     Sections (User, Category, Content, Review)
-     ========================================= */
+  /*  Sections (User, Category, Content, Review)  */
   .dashboard-section {
     background-color: #fff;
     border-radius: var(--border-radius);
@@ -239,9 +221,7 @@
     color: #555;
   }
   
-  /* =========================================
-     Form Fields & Buttons
-     ========================================= */
+  /*  Form Fields & Buttons  */
   .input-field {
     width: 100%;
     padding: 10px;
@@ -329,13 +309,10 @@
     background-color: #03a9f4;
   }
   
-  /* =========================================
-     Review Grid & Cards
-     ========================================= */
+  /*  Review Grid & Cards  */
   .review-grid {
     display: grid;
     gap: 20px;
-    /* Two columns on desktop, one column on mobile */
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     max-width: 100%;
     margin: 0 auto;
@@ -379,7 +356,7 @@
     margin-top: 15px;
   }
   
-  /* Modern styling for review action buttons */
+  /* Styling for review action buttons */
   .review-actions .action-button {
     flex: 1;
     padding: 10px;
@@ -429,9 +406,7 @@
     margin-top: 10px;
   }
   
-  /* =========================================
-     Dropdown Menus (Unused for review actions)
-     ========================================= */
+  /*  Dropdown Menus (Unused for review actions)  */
   .dropdown {
     position: relative;
     display: inline-block;
@@ -510,9 +485,7 @@
     color: #ff5722;
   }
   
-  /* =========================================
-     Category Dropdown
-     ========================================= */
+  /*  Category Dropdown  */
   .category-dropdown {
     margin-top: 15px;
   }
@@ -553,9 +526,7 @@
     transform: scale(1.05);
   }
   
-  /* =========================================
-     Profile Button
-     ========================================= */
+  /*  Profile Button  */
   .profile-button {
     background-color: #24a7e8;
     color: #fff;
@@ -571,9 +542,7 @@
     background-color: #0056b3;
   }
   
-  /* =========================================
-     Responsive Styles
-     ========================================= */
+  /*  Responsive Styles  */
   @media screen and (max-width: 768px) {
     .dashboard-container {
       flex-direction: column;

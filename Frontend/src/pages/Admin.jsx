@@ -9,9 +9,7 @@ const Admin = () => {
   const { authToken } = useContext(UserContext);
   console.log("Auth token:", authToken); // Debugging token
 
-  // -------------------------------
   // Existing State & Logic (unchanged)
-  // -------------------------------
 
   // User Management
   const [username, setUsername] = useState("");
@@ -38,23 +36,17 @@ const Admin = () => {
   // Review Management
   const [comment, setComment] = useState("");
 
-  // -------------------------------
   // NEW: Sidebar Toggle & Active Section
-  // -------------------------------
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeSection, setActiveSection] = useState("");
 
-  // -------------------------------
   // Fetch data on mount
-  // -------------------------------
   useEffect(() => {
     fetchCategories();
     fetchContents();
   }, [authToken]);
 
-  // --------------------------
   // Fetch Functions (unchanged)
-  // --------------------------
   const fetchCategories = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/categories", {
@@ -81,9 +73,7 @@ const Admin = () => {
     }
   };
 
-  // ---------------------------
   // User Management Functions (unchanged)
-  // ---------------------------
   const handleAddUser = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/auth/signup", {
@@ -134,9 +124,7 @@ const Admin = () => {
     }
   };
 
-  // ---------------------------
   // Category Management Functions (unchanged)
-  // ---------------------------
   const handleCreateCategory = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/categories", {
@@ -178,9 +166,7 @@ const Admin = () => {
     }
   };
 
-  // ---------------------------
   // Content Management Functions (updated)
-  // ---------------------------
   const handlePostContent = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/content", {
@@ -306,9 +292,7 @@ const Admin = () => {
     }
   };
 
-  // ---------------------------
   // Review Management Function (unchanged)
-  // ---------------------------
   const handleCommentContent = async (contentId) => {
     if (!comment.trim()) {
       toast.error("Comment cannot be empty.");
@@ -341,7 +325,7 @@ const Admin = () => {
     <div className="admin-dashboard">
       {/* Top Header with Sidebar Toggle */}
       <div className="admin-header">
-        {/* Clicking the title resets activeSection to display the landing page */}
+       
         <h1 className="dashboard-title" onClick={() => setActiveSection("")} style={{ cursor: "pointer" }}>
           Admin Dashboard
         </h1>
