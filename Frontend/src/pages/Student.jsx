@@ -11,22 +11,27 @@ const Student = () => {
   const [wishlist, setWishlist] = useState([]);
   const [contentComments, setContentComments] = useState({});
   const [contents, setContents] = useState([]);
-  const [categories, setCategories] = useState([]); 
+  const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [modalContentLink, setModalContentLink] = useState("");
+  const [likes, setLikes] = useState(() => JSON.parse(localStorage.getItem("likes")) || {});
+  const [dislikes, setDislikes] = useState(() => JSON.parse(localStorage.getItem("dislikes")) || {});
 
   const token = localStorage.getItem("token");
 
-  // Fetch categories & contents on mount
   useEffect(() => {
     fetchCategories();
     fetchContents();
   }, []);
 
-  // Fetch subscribed categories on mount
+  useEffect(() => {
+    localStorage.setItem("likes", JSON.stringify(likes));
+    localStorage.setItem("dislikes", JSON.stringify(dislikes));
+  }, [likes, dislikes]);
+
   const fetchCategories = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/categories", {
@@ -42,7 +47,6 @@ const Student = () => {
     }
   };
 
-  // Fetch all contents from backend
   const fetchContents = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/content", {
@@ -58,7 +62,6 @@ const Student = () => {
     }
   };
 
-  // Create Profile (unchanged)
   const handleCreateProfile = async () => {
     if (!profile.name || !profile.email) {
       setError("Name and email are required to create a profile.");
@@ -88,7 +91,6 @@ const Student = () => {
     }
   };
 
-  // Subscribe to a category
   const handleSubscribeCategory = async (category) => {
     try {
       if (subscribedCategories.includes(category)) {
@@ -118,7 +120,6 @@ const Student = () => {
     }
   };
 
-  // Comment on content
   const handleComment = async (contentId) => {
     if (!comment.trim()) {
       setError("Comment cannot be empty.");
@@ -155,7 +156,6 @@ const Student = () => {
     }
   };
 
-  // Add content to wishlist
   const handleAddToWishlist = async (contentTitle) => {
     try {
       if (wishlist.includes(contentTitle)) {
@@ -185,61 +185,22 @@ const Student = () => {
     }
   };
 
-  // Like content (updates local like counts)
-  const handleLikeContent = async (contentId) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/like`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setContents((prev) =>
-          prev.map((content) =>
-            content.id === contentId ? { ...content, likes: data.likes } : content
-          )
-        );
-        setSuccess("Liked!");
-        setTimeout(() => setSuccess(""), 3000);
-        setError(null);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message);
-      }
-    } catch (error) {
-      console.error("Error liking content:", error);
-      setError("Failed to like content. Please try again later.");
-    }
+  const handleLikeContent = (contentId) => {
+    setLikes((prev) => {
+      const updatedLikes = { ...prev, [contentId]: (prev[contentId] || 0) + 1 };
+      localStorage.setItem("likes", JSON.stringify(updatedLikes));
+      return updatedLikes;
+    });
   };
 
-  // Dislike content (updates local dislike count)
-  const handleDislikeContent = async (contentId) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/content/${contentId}/dislike`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json(); 
-        setContents((prev) =>
-          prev.map((content) =>
-            content.id === contentId ? { ...content, dislikes: data.dislikes } : content
-          )
-        );
-        setSuccess("Disliked!");
-        setTimeout(() => setSuccess(""), 3000);
-        setError(null);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message);
-      }
-    } catch (error) {
-      console.error("Error disliking content:", error);
-      setError("Failed to dislike content. Please try again later.");
-    }
+  const handleDislikeContent = (contentId) => {
+    setDislikes((prev) => {
+      const updatedDislikes = { ...prev, [contentId]: Math.max(0, (prev[contentId] || 0) + 1) };
+      localStorage.setItem("dislikes", JSON.stringify(updatedDislikes));
+      return updatedDislikes;
+    });
   };
 
-  // Modal for viewing content
   const handleViewContent = (link) => {
     setModalContentLink(link);
     setShowModal(true);
@@ -258,7 +219,6 @@ const Student = () => {
     setModalContentLink("");
   };
 
-  // Category filtering
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
   };
@@ -274,15 +234,12 @@ const Student = () => {
 
   return (
     <div className="container">
-      {/* HEADER */}
       <header className="header">
         <h1>Student Dashboard</h1>
         <p>
           Get inspired by the Moringa School community. Access verified tech content, expert interviews, and success stories.
         </p>
       </header>
-
-      {/* NAVIGATION */}
       <nav className="nav">
         <button
           className={`nav-button ${selectedCategory === "All" ? "active" : ""}`}
@@ -302,52 +259,40 @@ const Student = () => {
           </button>
         ))}
       </nav>
-
-      {/* PROFILE BUTTON */}
       <div style={{ display: "flex", justifyContent: "flex-end", margin: "10px 0" }}>
         <Link to="/profile" className="profile-button">
           My Profile
         </Link>
       </div>
-
-      {/* SUCCESS / ERROR MESSAGES */}
       {success && <div className="success">{success}</div>}
       {error && <div className="error">{error}</div>}
-
-      {/* CONTENT SECTION */}
       <div className="content-section">
         {filteredContents.map((content) => (
           <Card key={content.id} className="recommended-content">
             <CardContent>
               <h3 className="content-title">{content.title}</h3>
-
               {content.summary ? (
                 <p className="content-summary">{content.summary}</p>
               ) : (
                 <p className="content-description">{content.description}</p>
               )}
-
-              {/* Display author if present */}
               {content.author && (
                 <div className="content-author">
                   <strong>Author:</strong> {content.author}
                 </div>
               )}
-
-              {/* Display content type */}
               <div className="content-footer">
                 <span className="content-type">{content.content_type}</span>
                 {content.duration && (
                   <span className="content-duration">Duration: {content.duration}</span>
                 )}
               </div>
-
               <div className="content-actions">
                 <Button onClick={() => handleLikeContent(content.id)} className="button button-green">
-                  Like {content.likes ? `(${content.likes})` : ""}
+                  Like ({likes[content.id] || 0})
                 </Button>
                 <Button onClick={() => handleDislikeContent(content.id)} className="button button-red">
-                  Dislike {content.dislikes ? `(${content.dislikes})` : ""}
+                  Dislike ({dislikes[content.id] || 0})
                 </Button>
                 <Button onClick={() => handleAddToWishlist(content.title)} className="button button-purple">
                   Wishlist
@@ -363,7 +308,6 @@ const Student = () => {
                     : "View"}
                 </Button>
               </div>
-
               <div className="comment-input">
                 <input
                   type="text"
@@ -386,8 +330,6 @@ const Student = () => {
           </Card>
         ))}
       </div>
-
-      {/* MODAL POPUP FOR VIEWING CONTENT */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
