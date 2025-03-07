@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./BlogPage.css";
 
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "https://backend-student-motivation-app-1.onrender.com";
 
 const BlogPage = () => {
   const [posts, setPosts] = useState([]);

@@ -49,7 +49,7 @@ export default function UserProfile() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/profile", {
+      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +93,7 @@ export default function UserProfile() {
     uploadData.append("file", selectedFile);
 
     try {
-      const response = await fetch("http://localhost:5000/profile/picture", {
+      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/profile/picture", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -122,7 +122,7 @@ export default function UserProfile() {
   // Build the URL to display the profile picture.
   // Assumes your Flask route serves the image at /uploads/<filename>
   const profilePicUrl = formData.profile_pic
-    ? `http://localhost:5000/uploads/${formData.profile_pic}`
+    ? `https://backend-student-motivation-app-1.onrender.com/uploads/${formData.profile_pic}`
     : "https://via.placeholder.com/150"; // Fallback image URL
 
   return (

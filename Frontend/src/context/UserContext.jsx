@@ -6,7 +6,7 @@ export const UserContext = createContext();
 
 export default function UserProvider({ children }) {
     const navigate = useNavigate();
-    const API_BASE_URL = "http://localhost:5000";
+    const API_BASE_URL = "https://backend-student-motivation-app-1.onrender.com";
 
     const [authToken, setAuthToken] = useState(() => {
         try {
@@ -56,28 +56,40 @@ export default function UserProvider({ children }) {
     }, [API_BASE_URL, authToken]);
 
     const addUser = async (firstName, lastName, email, password, role) => {
+        const navigate = useNavigate();  // Ensure it's inside a React component
+    
         try {
             const response = await fetch(`${API_BASE_URL}/auth/signup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include",
+                credentials: "include",  // Ensures cookies are sent with request
                 body: JSON.stringify({ firstName, lastName, email, password, role }),
             });
-
+    
+            const data = await response.json(); // Always parse response first
+    
             if (response.ok) {
                 toast.success("User registered successfully!");
-                navigate("/login");
+                navigate("/login");  // Redirect to login page
             } else {
-                const errorData = await response.json();
-                toast.error(errorData.error || "Registration failed. Try again.");
+                toast.error(data.error || "Registration failed. Try again.");
             }
         } catch (error) {
+            console.error("Error registering user:", error);
             toast.error("Failed to connect to the server.");
         }
     };
+    
 
-    const login = async (email, password, role) => {
+    const login = async (email, password, role, setAuthToken, setCurrentUser) => {
+        const navigate = useNavigate(); // Ensure it's inside a React component
+    
         try {
+            if (!role) {
+                toast.error("Role is required for login.");
+                return;
+            }
+    
             const loginEndpoint = `${API_BASE_URL}/${role.toLowerCase()}/login`;
             const response = await fetch(loginEndpoint, {
                 method: "POST",
@@ -85,22 +97,23 @@ export default function UserProvider({ children }) {
                 credentials: "include",
                 body: JSON.stringify({ email, password }),
             });
-
-            const data = await response.json();
-
+    
+            const data = await response.json(); // Always parse the response
+    
             if (response.ok) {
                 // Save token and user info to localStorage
                 setAuthToken(data.access_token);
                 setCurrentUser(data);
                 localStorage.setItem("token", data.access_token);
                 localStorage.setItem("user", JSON.stringify(data));
-
+    
                 toast.success("Login successful!");
                 navigate(data.role === "admin" ? "/admin" : "/student");
             } else {
                 toast.error(data.error || "Invalid login credentials.");
             }
         } catch (error) {
+            console.error("Login error:", error);
             toast.error("Failed to connect to the server.");
         }
     };
