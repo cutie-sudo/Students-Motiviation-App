@@ -34,7 +34,7 @@ const Student = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/categories", {
+      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/categories", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -49,7 +49,7 @@ const Student = () => {
 
   const fetchContents = async () => {
     try {
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/content", {
+      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/content", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -68,7 +68,7 @@ const Student = () => {
       return;
     }
     try {
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/students", {
+      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/students", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +97,7 @@ const Student = () => {
         setError(`Already subscribed to ${category}`);
         return;
       }
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/subscribe", {
+      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/subscribe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +126,7 @@ const Student = () => {
       return;
     }
     try {
-      const response = await fetch(`https://backend-student-motivation-app-2.onrender.com/content/${contentId}/comment`, {
+      const response = await fetch(`https://backend-student-motivation-app-1.onrender.com/content/${contentId}/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -162,7 +162,7 @@ const Student = () => {
         setError("Content already in wishlist");
         return;
       }
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/wishlist", {
+      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/wishlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
