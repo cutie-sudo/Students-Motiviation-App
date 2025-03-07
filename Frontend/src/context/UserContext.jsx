@@ -6,7 +6,7 @@ export const UserContext = createContext();
 
 export default function UserProvider({ children }) {
     const navigate = useNavigate();
-    const API_BASE_URL = process.env.REACT_APP_API_URL || "https://backend-student-motivation-app-1.onrender.com";
+    const API_BASE_URL ="https://backend-student-motivation-app-1.onrender.com";
 
     const [authToken, setAuthToken] = useState(localStorage.getItem("token") || null);
 
@@ -29,7 +29,7 @@ export default function UserProvider({ children }) {
             return;
         }
 
-        fetch(`${API_BASE_URL}/profile`, {
+        fetch("https://backend-student-motivation-app-1.onrender.com/profile", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -49,30 +49,43 @@ export default function UserProvider({ children }) {
         });
     }, [API_BASE_URL, authToken]);
 
-    // Register user
-    const addUser = async (firstName, lastName, email, password, role, navigate) => {
+    const addUser = async (firstName, lastName, email, password, role) => {
+        toast.loading("Registering...");
+    
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+            const response = await fetch("https://motiviationapp-backend.onrender.com/signup", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ firstName, lastName, email, password, role }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                  
+                body: JSON.stringify({
+                    firstName,
+                    lastName,
+                    email,
+                    password,
+                    role,
+                }),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
-                toast.success("User registered successfully!");
+                toast.dismiss();
+                toast.success(data.message || "User registered successfully!");
                 navigate("/login");
             } else {
-                toast.error(data.error || "Registration failed. Try again.");
+                toast.dismiss();
+                toast.error(data.error || "Failed to register user.");
             }
         } catch (error) {
-            console.error("Error registering user:", error);
+            toast.dismiss();
+            console.error("Error:", error);
             toast.error("Failed to connect to the server.");
         }
     };
-
+    
+    
     
     // User login
     const login = async (email, password, role, navigate) => {
@@ -141,7 +154,7 @@ export default function UserProvider({ children }) {
     }
 
     return (
-        <UserContext.Provider value={{ current_user, authToken, addUser, googleLogin, login, logout, signupUser}}>
+        <UserContext.Provider value={{ current_user, authToken, addUser, googleLogin, login, logout}}>
             {children}
         </UserContext.Provider>
     );
