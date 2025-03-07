@@ -58,19 +58,19 @@ export default function UserProvider({ children }) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                  
+                credentials: "include", // Ensures cookies/session tokens are sent
                 body: JSON.stringify({
                     firstName,
                     lastName,
                     email,
                     password,
-                    role,
+                    role: role || "student", // Providing default value like the backend
                 }),
             });
-    
+            
             const data = await response.json();
     
-            if (response.ok) {
+            if (data.success) {
                 toast.dismiss();
                 toast.success(data.message || "User registered successfully!");
                 navigate("/login");
@@ -84,7 +84,6 @@ export default function UserProvider({ children }) {
             toast.error("Failed to connect to the server.");
         }
     };
-    
     
     
     // User login
