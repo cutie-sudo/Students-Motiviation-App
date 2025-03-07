@@ -8,14 +8,8 @@ export default function UserProvider({ children }) {
     const navigate = useNavigate();
     const API_BASE_URL = process.env.REACT_APP_API_URL || "https://backend-student-motivation-app-1.onrender.com";
 
-    const [authToken, setAuthToken] = useState(() => {
-        try {
-            return localStorage.getItem("token") || null;
-        } catch (error) {
-            console.warn("Local storage not accessible.", error);
-            return null;
-        }
-    });
+    const [authToken, setAuthToken] = useState(localStorage.getItem("token") || null);
+
 
     const [current_user, setCurrentUser] = useState(() => {
         try {
@@ -79,6 +73,7 @@ export default function UserProvider({ children }) {
         }
     };
 
+    
     // User login
     const login = async (email, password, role, navigate) => {
         try {
@@ -146,7 +141,7 @@ export default function UserProvider({ children }) {
     }
 
     return (
-        <UserContext.Provider value={{ current_user, authToken, addUser, googleLogin, login, logout }}>
+        <UserContext.Provider value={{ current_user, authToken, addUser, googleLogin, login, logout, signupUser}}>
             {children}
         </UserContext.Provider>
     );
