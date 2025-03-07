@@ -35,7 +35,7 @@ export default function Login() {
       console.log("Google Sign-In Successful:", user);
       console.log("ID Token:", idToken);
 
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || "https://backend-student-motivation-app-1.onrender.com"}/auth/google_login`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || "https://backend-student-motivation-app-2.onrender.com"}/auth/google_login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
