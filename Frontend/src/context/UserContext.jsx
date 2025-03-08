@@ -74,6 +74,8 @@ export default function UserProvider({ children }) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authToken}`,
+                    
                 },
                 credentials: "include",  // Ensure credentials are sent with the request
                 body: JSON.stringify({
@@ -121,7 +123,9 @@ export default function UserProvider({ children }) {
       
             const response = await fetch("https://backend-student-motivation-app-2.onrender.com/login", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: 
+                { "Content-Type": "application/json" },
+                Authorization: `Bearer ${authToken}`,
                 credentials: "include",
                 body: JSON.stringify({ email, password }),
             });
