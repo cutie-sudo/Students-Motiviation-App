@@ -6,7 +6,14 @@ export const UserContext = createContext();
 
 export default function UserProvider({ children }) {
     const navigate = useNavigate();
-    const API_BASE_URL ="https://backend-student-motivation-app-2.onrender.com";
+    const API_BASE_URL = "https://backend-student-motivation-app-2.onrender.com";
+
+    // Function to check if token is expired
+    const isTokenExpired = (token) => {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expiration = payload.exp * 1000; // JWT expiration time is in seconds
+        return expiration < Date.now();
+    };
 
     const [authToken, setAuthToken] = useState(() => {
         const token = localStorage.getItem("token");
@@ -20,14 +27,6 @@ export default function UserProvider({ children }) {
         return token || null;
     });
     
-    const isTokenExpired = (token) => {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const expiration = payload.exp * 1000; // JWT expiration time is in seconds
-        return expiration < Date.now();
-    };
-    
-
-
     const [current_user, setCurrentUser] = useState(() => {
         try {
             return JSON.parse(localStorage.getItem("user")) || null;
@@ -64,7 +63,7 @@ export default function UserProvider({ children }) {
         .catch((error) => {
             console.error("Error fetching user:", error);
         });
-    }, [API_BASE_URL, authToken]);
+    }, [authToken]);
 
     const addUser = async (firstName, lastName, email, password, role) => {
         toast.loading("Registering...");
@@ -75,7 +74,6 @@ export default function UserProvider({ children }) {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${authToken}`,
-                    
                 },
                 credentials: "include",  // Ensure credentials are sent with the request
                 body: JSON.stringify({
@@ -112,7 +110,6 @@ export default function UserProvider({ children }) {
         }
     };
     
-    
     // User login
     const login = async (email, password, role, navigate) => {
         try {
@@ -147,7 +144,7 @@ export default function UserProvider({ children }) {
             console.error("Login error:", error);
             toast.error("Failed to connect to the server.");
         }
-      };
+    };
 
     // Google login
     const googleLogin = async () => {
@@ -181,7 +178,7 @@ export default function UserProvider({ children }) {
     }
 
     return (
-        <UserContext.Provider value={{ current_user, authToken, addUser, googleLogin, login, logout}}>
+        <UserContext.Provider value={{ current_user, authToken, addUser, googleLogin, login, logout }}>
             {children}
         </UserContext.Provider>
     );
