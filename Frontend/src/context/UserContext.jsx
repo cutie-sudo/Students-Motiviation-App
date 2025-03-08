@@ -6,9 +6,26 @@ export const UserContext = createContext();
 
 export default function UserProvider({ children }) {
     const navigate = useNavigate();
-    const API_BASE_URL ="https://backend-student-motivation-app-1.onrender.com";
+    const API_BASE_URL ="https://backend-student-motivation-app-2.onrender.com";
 
-    const [authToken, setAuthToken] = useState(localStorage.getItem("token") || null);
+    const [authToken, setAuthToken] = useState(() => {
+        const token = localStorage.getItem("token");
+        
+        // Optional: Check if the token is expired (assuming JWT)
+        if (token && isTokenExpired(token)) {
+            localStorage.removeItem("token");
+            return null;
+        }
+    
+        return token || null;
+    });
+    
+    const isTokenExpired = (token) => {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expiration = payload.exp * 1000; // JWT expiration time is in seconds
+        return expiration < Date.now();
+    };
+    
 
 
     const [current_user, setCurrentUser] = useState(() => {
@@ -29,7 +46,7 @@ export default function UserProvider({ children }) {
             return;
         }
 
-        fetch("https://backend-student-motivation-app-1.onrender.com/profile", {
+        fetch("https://backend-student-motivation-app-2.onrender.com/profile", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -53,27 +70,35 @@ export default function UserProvider({ children }) {
         toast.loading("Registering...");
     
         try {
-            const response = await fetch("https://motiviationapp-backend.onrender.com/signup", {
+            const response = await fetch("https://backend-student-motivation-app-2.onrender.com/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                credentials: "include", // Ensures cookies/session tokens are sent
+                credentials: "include",  // Ensure credentials are sent with the request
                 body: JSON.stringify({
                     firstName,
                     lastName,
                     email,
                     password,
-                    role: role || "student", // Providing default value like the backend
+                    role: role || "student",  // Default to "student" if no role provided
                 }),
             });
-            
+    
             const data = await response.json();
     
             if (data.success) {
                 toast.dismiss();
                 toast.success(data.message || "User registered successfully!");
-                navigate("/login");
+    
+                // Store token and user data in localStorage and state
+                setAuthToken(data.access_token); // Set the auth token
+                setCurrentUser(data.data); // Store user data in state (you need to implement this function)
+                localStorage.setItem("token", data.access_token);
+                localStorage.setItem("user", JSON.stringify(data.data));
+    
+                // Navigate to the appropriate dashboard based on the user's role
+                navigate(data.data.role === "admin" ? "/admin" : "/student");
             } else {
                 toast.dismiss();
                 toast.error(data.error || "Failed to register user.");
@@ -94,7 +119,7 @@ export default function UserProvider({ children }) {
                 return;
             }
       
-            const response = await fetch("https://backend-student-motivation-app-1.onrender.com/login", {
+            const response = await fetch("https://backend-student-motivation-app-2.onrender.com/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -119,7 +144,7 @@ export default function UserProvider({ children }) {
             toast.error("Failed to connect to the server.");
         }
       };
-      
+
     // Google login
     const googleLogin = async () => {
         try {

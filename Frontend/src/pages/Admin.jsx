@@ -127,7 +127,7 @@ const Admin = () => {
   // Category Management Functions (unchanged)
   const handleCreateCategory = async () => {
     try {
-      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/categories", {
+      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/categories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -150,7 +150,7 @@ const Admin = () => {
 
   const handleRemoveCategory = async (categoryId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-1.onrender.com/categories/${categoryId}`, {
+      const response = await fetch(`https://backend-student-motivation-app-2.onrender.com/categories/${categoryId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -169,7 +169,7 @@ const Admin = () => {
   // Content Management Functions (updated)
   const handlePostContent = async () => {
     try {
-      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/content", {
+      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/content", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -199,7 +199,7 @@ const Admin = () => {
 
   const handleRemoveContent = async (contentId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-1.onrender.com/content/${contentId}`, {
+      const response = await fetch(`https://backend-student-motivation-app-2.onrender.com/content/${contentId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${authToken}` },
       });
