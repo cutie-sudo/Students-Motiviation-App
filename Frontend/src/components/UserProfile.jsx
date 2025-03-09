@@ -7,19 +7,16 @@ export default function UserProfile() {
   const { current_user, authToken } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // Local state for text fields and profile pic filename
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     role: "",
-    profile_pic: "", // stores filename or URL of profile picture
+    profile_pic: "",
   });
-
-  // For file upload
+  
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // Populate form with current_user data once it's loaded
   useEffect(() => {
     if (current_user) {
       setFormData({
@@ -32,7 +29,6 @@ export default function UserProfile() {
     }
   }, [current_user]);
 
-  // Handle input changes for text fields
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -40,7 +36,6 @@ export default function UserProfile() {
     });
   };
 
-  // Handle profile update for text fields
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!authToken) {
@@ -59,7 +54,7 @@ export default function UserProfile() {
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
-          password: formData.password, // If blank, password won't be updated
+          password: formData.password || undefined,
         }),
       });
 
@@ -67,7 +62,6 @@ export default function UserProfile() {
 
       if (response.ok) {
         toast.success("Profile updated successfully!");
-        // Optionally, you could refresh user context here
       } else {
         toast.error(data.error || "Profile update failed.");
       }
@@ -77,12 +71,10 @@ export default function UserProfile() {
     }
   };
 
-  // Handle file selection change
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
-  // Handle uploading the profile picture
   const handleUploadPicture = async () => {
     if (!selectedFile) {
       toast.error("Please select a file to upload.");
@@ -95,16 +87,13 @@ export default function UserProfile() {
     try {
       const response = await fetch("https://backend-student-motivation-app-2.onrender.com/profile/picture", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
         body: uploadData,
       });
 
       const data = await response.json();
       if (response.ok) {
         toast.success("Profile picture updated successfully!");
-        // Update local state with new profile picture filename so that image updates
         setFormData((prev) => ({ ...prev, profile_pic: data.profile_pic }));
       } else {
         toast.error(data.error || "Upload failed.");
@@ -119,87 +108,45 @@ export default function UserProfile() {
     return <div className="p-4 text-center">Loading profile...</div>;
   }
 
-  // Build the URL to display the profile picture.
-  // Assumes your Flask route serves the image at /uploads/<filename>
   const profilePicUrl = formData.profile_pic
     ? `https://backend-student-motivation-app-2.onrender.com/uploads/${formData.profile_pic}`
-    : "https://via.placeholder.com/150"; // Fallback image URL
+    : "https://via.placeholder.com/150";
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-blue-50 p-4">
       <h2 className="text-2xl font-bold mb-6">My Profile</h2>
 
-      {/* Display current profile picture */}
-      <img
-        src={profilePicUrl}
-        alt="Profile"
-        className="rounded-full mb-4"
-        style={{ width: "150px", height: "150px", objectFit: "cover" }}
-      />
+      <img src={profilePicUrl} alt="Profile" className="rounded-full mb-4" style={{ width: "150px", height: "150px", objectFit: "cover" }} />
 
-      {/* File input for changing profile picture */}
       <div className="mb-6">
         <input type="file" onChange={handleFileChange} />
-        <button
-          onClick={handleUploadPicture}
-          className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
-        >
+        <button onClick={handleUploadPicture} className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
           Upload Picture
         </button>
       </div>
 
-      {/* Profile update form for text fields */}
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Username</label>
-          <input
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none"
-            type="text"
-          />
+          <input name="username" value={formData.username} onChange={handleChange} className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none" type="text" />
         </div>
 
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Email</label>
-          <input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none"
-            type="email"
-          />
+          <input name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none" type="email" />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">
-            New Password <span className="text-gray-500">(optional)</span>
-          </label>
-          <input
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none"
-            type="password"
-          />
+          <label className="block text-sm font-medium mb-1">New Password <span className="text-gray-500">(optional)</span></label>
+          <input name="password" value={formData.password} onChange={handleChange} className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none" type="password" />
         </div>
 
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Role</label>
-          <input
-            name="role"
-            value={formData.role}
-            disabled
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100"
-            type="text"
-          />
+          <input name="role" value={formData.role} disabled className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100" type="text" />
         </div>
 
-        <button
-          type="submit"
-          className="w-full py-2 mt-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition"
-        >
+        <button type="submit" className="w-full py-2 mt-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition">
           Update Profile
         </button>
       </form>
