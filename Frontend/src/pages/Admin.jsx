@@ -217,22 +217,33 @@ const Admin = () => {
 
   const handleRemoveContent = async (contentId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/content/${contentId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-
-      if (response.ok) {
-        toast.success("Content removed successfully!");
-        fetchContents();
-      } else {
-        toast.error("Failed to remove content.");
+      const response = await fetch(
+        `https://backend-student-motivation-app-4.onrender.com/content/${contentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+  
+      // Attempt to parse JSON response safely
+      const responseData = await response.json().catch(() => null);
+  
+      if (!response.ok) {
+        throw new Error(responseData?.message || "Failed to remove content.");
       }
+  
+      toast.success("Content removed successfully!");
+      await fetchContents(); // Ensure UI updates correctly
+  
     } catch (error) {
       console.error("Error removing content:", error);
-      toast.error("An error occurred while removing the content.");
+      toast.error(error.message || "An unexpected error occurred.");
     }
   };
+  
 
   const handleApproveContent = async (contentId) => {
     try {
