@@ -49,7 +49,7 @@ const Admin = () => {
   // Fetch Functions (unchanged)
   const fetchCategories = async () => {
     try {
-      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/categories", {
+      const response = await fetch("https://backend-student-motivation-app-4.onrender.com/categories", {
         method: "GET",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -106,7 +106,7 @@ const Admin = () => {
   const handleDeactivateUser = async () => {
     try {
       const response = await fetch(
-        `https://backend-student-motivation-app-1.onrender.com/users/${userId}/deactivate`,
+        `https://backend-student-motivation-app-4.onrender.com/users/${userId}/deactivate`,
         {
           method: "PATCH",
           headers: {
@@ -135,7 +135,7 @@ const Admin = () => {
   // Category Management Functions (unchanged)
   const handleCreateCategory = async () => {
     try {
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/categories", {
+      const response = await fetch("https://backend-student-motivation-app-4.onrender.com/categories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -158,7 +158,7 @@ const Admin = () => {
 
   const handleRemoveCategory = async (categoryId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-2.onrender.com/categories/${categoryId}`, {
+      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/categories/${categoryId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -177,7 +177,7 @@ const Admin = () => {
   // Content Management Functions (updated)
   const handlePostContent = async () => {
     try {
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/content", {
+      const response = await fetch("https://backend-student-motivation-app-4.onrender.com/content", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -207,7 +207,7 @@ const Admin = () => {
 
   const handleRemoveContent = async (contentId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-2.onrender.com/content/${contentId}`, {
+      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/content/${contentId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -226,7 +226,7 @@ const Admin = () => {
 
   const handleApproveContent = async (contentId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-1.onrender.com/content/${contentId}/approve`, {
+      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/content/${contentId}/approve`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -248,7 +248,7 @@ const Admin = () => {
 
   const handleLikeContent = async (contentId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-1.onrender.com/content/${contentId}/like`, {
+      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/content/${contentId}/like`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -266,7 +266,7 @@ const Admin = () => {
 
   const handleDislikeContent = async (contentId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-1.onrender.com/content/${contentId}/dislike`, {
+      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/content/${contentId}/dislike`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -284,7 +284,7 @@ const Admin = () => {
 
   const handleFlagContent = async (contentId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-1.onrender.com/content/${contentId}/flag`, {
+      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/content/${contentId}/flag`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
       });

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Wishlist.css";
 
-const API_BASE_URL = "https://backend-student-motivation-app-2.onrender.com";
+const API_BASE_URL = "https://backend-student-motivation-app-4.onrender.com";
 
 export default function Wishlist() {
     const [wishlist, setWishlist] = useState([]);

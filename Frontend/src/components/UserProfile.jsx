@@ -44,7 +44,7 @@ export default function UserProfile() {
     }
 
     try {
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/profile", {
+      const response = await fetch("https://backend-student-motivation-app-4.onrender.com/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export default function UserProfile() {
     uploadData.append("file", selectedFile);
 
     try {
-      const response = await fetch("https://backend-student-motivation-app-2.onrender.com/profile/picture", {
+      const response = await fetch("https://backend-student-motivation-app-4.onrender.com/profile/picture", {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
         body: uploadData,
@@ -109,7 +109,7 @@ export default function UserProfile() {
   }
 
   const profilePicUrl = formData.profile_pic
-    ? `https://backend-student-motivation-app-2.onrender.com/uploads/${formData.profile_pic}`
+    ? `https://backend-student-motivation-app-4.onrender.com/uploads/${formData.profile_pic}`
     : "https://via.placeholder.com/150";
 
   return (

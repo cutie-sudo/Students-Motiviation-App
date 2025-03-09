@@ -6,7 +6,7 @@ export const UserContext = createContext();
 
 export default function UserProvider({ children }) {
     const navigate = useNavigate();
-    const API_BASE_URL = "https://backend-student-motivation-app-2.onrender.com";
+    const API_BASE_URL = "https://backend-student-motivation-app-4.onrender.com";
 
     // Function to check if token is expired
     const isTokenExpired = (token) => {
