@@ -117,35 +117,38 @@ export default function UserProvider({ children }) {
             toast.error("Role is required for login.");
             return;
         }
-
+    
         toast.loading("Logging in...");
-
+    
         try {
+            console.log("Sending login request to:", `${API_BASE_URL}/login`);
+    
             const response = await fetch(`${API_BASE_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                credentials: "include",
-                body: JSON.stringify({ email, password }),
+                credentials: "include", // Ensures cookies/tokens are sent
+                body: JSON.stringify({ email, password, role }), // Added role
             });
-
-            const data = await response.json();
-
-            if (response.ok && data.access_token) {
-                setAuthToken(data.access_token);
-                setCurrentUser(data.user);
-                localStorage.setItem("token", data.access_token);
-                localStorage.setItem("user", JSON.stringify(data.user));
-
-                toast.dismiss();
-                toast.success("Login successful!");
-
-                navigate(data.user.role === "admin" ? "/admin" : "/student");
-            } else {
-                toast.dismiss();
-                toast.error(data.error || "Invalid login credentials.");
+    
+            console.log("Response received:", response);
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Login failed.");
             }
+    
+            const data = await response.json();
+            console.log("Login success:", data);
+    
+            localStorage.setItem("token", data.access_token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+    
+            toast.dismiss();
+            toast.success("Login successful!");
+    
+            navigate(data.user.role === "admin" ? "/admin" : "/student");
         } catch (error) {
             toast.dismiss();
             console.error("Login error:", error);
