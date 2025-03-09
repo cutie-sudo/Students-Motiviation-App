@@ -158,21 +158,30 @@ const Admin = () => {
 
   const handleRemoveCategory = async (categoryId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/categories/${categoryId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-
-      if (response.ok) {
-        toast.success("Category removed successfully!");
-        fetchCategories();
-      } else {
-        toast.error("Failed to remove category.");
+      const response = await fetch(
+        `https://backend-student-motivation-app-4.onrender.com/categories/${categoryId}`,
+        {
+          method: "DELETE",
+          headers: { 
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json"
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Failed to remove category.");
       }
+  
+      toast.success("Category removed successfully!");
+      await fetchCategories(); // Ensure it completes before proceeding
     } catch (error) {
       console.error("Error removing category:", error);
+      toast.error(error.message || "An unexpected error occurred.");
     }
   };
+  
 
   // Content Management Functions (updated)
   const handlePostContent = async () => {
@@ -185,25 +194,26 @@ const Admin = () => {
         },
         body: JSON.stringify({
           title: contentTitle,
-          // Send the new summary and author fields
-          summary: summary,
-          author: author,
           category_id: selectedCategory,
           content_type: contentType,
           content_link: contentLink,
         }),
       });
-
-      if (response.ok) {
-        toast.success("Content posted successfully!");
-        fetchContents();
-      } else {
-        toast.error("Failed to post content.");
+  
+      const responseData = await response.json().catch(() => null);
+  
+      if (!response.ok) {
+        throw new Error(responseData?.message || "Failed to post content.");
       }
+  
+      toast.success("Content posted successfully!");
+      await fetchContents(); // Ensure content refresh before proceeding
     } catch (error) {
       console.error("Error posting content:", error);
+      toast.error(error.message || "An unexpected error occurred.");
     }
   };
+  
 
   const handleRemoveContent = async (contentId) => {
     try {
@@ -226,25 +236,63 @@ const Admin = () => {
 
   const handleApproveContent = async (contentId) => {
     try {
-      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/content/${contentId}/approve`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-
-      if (response.ok) {
-        toast.success("Content approved successfully!");
-        fetchContents();
-      } else {
-        toast.error("Failed to approve content.");
+      const response = await fetch(
+        `https://backend-student-motivation-app-4.onrender.com/content/${contentId}/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+  
+      const responseData = await response.json().catch(() => null);
+  
+      if (!response.ok) {
+        throw new Error(responseData?.message || "Failed to approve content.");
       }
+  
+      toast.success("Content approved successfully!");
+      await fetchContents(); // Ensure the UI updates after approval
     } catch (error) {
       console.error("Error approving content:", error);
+      toast.error(error.message || "An unexpected error occurred.");
     }
   };
+  
 
-  const handleEditContent = (contentId) => {
-    console.log("Editing content with ID:", contentId);
+  const handleEditContent = async (contentId) => {
+    try {
+      console.log("Editing content with ID:", contentId);
+  
+      const response = await fetch(
+        `https://backend-student-motivation-app-4.onrender.com/content/${contentId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+  
+      const contentData = await response.json().catch(() => null);
+  
+      if (!response.ok) {
+        throw new Error(contentData?.message || "Failed to fetch content details.");
+      }
+  
+      // Assuming you have a state setter function to store content data
+      setEditingContent(contentData); // Update state with fetched content
+      setIsEditModalOpen(true); // Open modal or edit form
+  
+    } catch (error) {
+      console.error("Error fetching content for edit:", error);
+      toast.error(error.message || "An unexpected error occurred.");
+    }
   };
+  
 
   const handleLikeContent = async (contentId) => {
     try {

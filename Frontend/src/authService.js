@@ -1,7 +1,7 @@
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth, provider } from "./firebaseConfig";
 
-const BACKEND_URL = "https://backend-student-motivation-app-1.onrender.com"; // ✅ Backend URL
+const BACKEND_URL = "https://backend-student-motivation-app-4.onrender.com"; // ✅ Backend URL
 
 export const handleGoogleSignIn = async () => {
   try {

@@ -108,9 +108,10 @@ export default function UserProfile() {
     return <div className="p-4 text-center">Loading profile...</div>;
   }
 
-  const profilePicUrl = formData.profile_pic
-    ? `https://backend-student-motivation-app-4.onrender.com/uploads/${formData.profile_pic}`
-    : "https://via.placeholder.com/150";
+  const profilePicUrl = formData?.profile_pic
+  ? `https://backend-student-motivation-app-4.onrender.com/uploads/${encodeURIComponent(formData.profile_pic)}`
+  : "https://via.placeholder.com/150";
+
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-blue-50 p-4">

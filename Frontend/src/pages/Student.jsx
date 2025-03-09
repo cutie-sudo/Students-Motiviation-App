@@ -159,34 +159,40 @@ const Student = () => {
 
   const handleAddToWishlist = async (contentId, contentTitle) => {
     try {
+      // Check if the content is already in the wishlist
       if (wishlist.includes(contentTitle)) {
         setError("Content already in wishlist");
         return;
       }
+  
       const response = await fetch("https://backend-student-motivation-app-4.onrender.com/wishlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          post_id: contentId 
-        }),
+        body: JSON.stringify({ post_id: contentId }),
       });
-      if (response.ok) {
-        setWishlist((prev) => [...prev, contentTitle]);
-        setSuccess("Added to wishlist!");
-        setTimeout(() => setSuccess(""), 3000);
-        setError(null);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message);
+  
+      const responseData = await response.json().catch(() => null);
+  
+      if (!response.ok) {
+        throw new Error(responseData?.message || "Failed to add to wishlist.");
       }
+  
+      // Update wishlist state
+      setWishlist((prev) => [...prev, contentTitle]);
+      setSuccess("Added to wishlist!");
+      setError(null);
+  
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(""), 3000);
     } catch (error) {
       console.error("Error adding to wishlist:", error);
-      setError("Failed to add to wishlist. Please try again later.");
+      setError(error.message || "Failed to add to wishlist. Please try again later.");
     }
   };
+  
 
   const handleLikeContent = (contentId) => {
     setLikes((prev) => {
