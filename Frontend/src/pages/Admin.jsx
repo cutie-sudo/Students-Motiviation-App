@@ -76,7 +76,7 @@ const Admin = () => {
   // User Management Functions (unchanged)
   const handleAddUser = async () => {
     try {
-      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/auth/signup", {
+      const response = await fetch("https://backend-student-motivation-app-1.onrender.com/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
