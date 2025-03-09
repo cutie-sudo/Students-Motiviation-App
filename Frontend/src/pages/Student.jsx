@@ -233,13 +233,14 @@ const Student = () => {
   };
   console.log(contents)
   const filteredContents =
-    selectedCategory === "All"
-      ? contents
-      : contents.filter(
-          (item) =>
-            item.title &&
-            item.title.toLowerCase() === selectedCategory.toLowerCase()
-        );
+  selectedCategory === "All"
+    ? contents
+    : contents.filter(
+        (item) =>
+          item.category &&
+          item.category.name.toLowerCase() === selectedCategory.toLowerCase()
+      );
+
 
   return (
     <div className="container">
