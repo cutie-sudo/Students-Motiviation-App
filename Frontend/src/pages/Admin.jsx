@@ -113,14 +113,16 @@ const Admin = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authToken}`,
           },
+          credentials: "include", // Ensures cookies are sent if needed
         }
       );
   
-      const data = await response.json(); // Ensure response is parsed
+      const data = await response.json(); // Parse response
   
       if (response.ok) {
         toast.success(data.message || "User deactivated successfully!");
       } else {
+        console.error("Failed to deactivate user:", data.message);
         toast.error(data.message || "Failed to deactivate user.");
       }
     } catch (error) {
@@ -128,6 +130,7 @@ const Admin = () => {
       toast.error("Failed to connect to the server.");
     }
   };
+  
   
   // Category Management Functions (unchanged)
   const handleCreateCategory = async () => {
