@@ -19,6 +19,8 @@ const Student = () => {
   const [modalContentLink, setModalContentLink] = useState("");
   const [likes, setLikes] = useState(() => JSON.parse(localStorage.getItem("likes")) || {});
   const [dislikes, setDislikes] = useState(() => JSON.parse(localStorage.getItem("dislikes")) || {});
+  const [newComment, setNewComment] = useState({});
+
 
   const token = localStorage.getItem("token");
 
@@ -121,32 +123,54 @@ const Student = () => {
     }
   };
 
-  const handleComment = async (contentId) => {
-    if (!comment.trim()) {
+  const fetchComments = async (contentId) => {
+    try {
+      const res = await fetch(`${API_URL}/content/${contentId}/comments`);
+      const data = await res.json();
+      setContentComments((prev) => ({ ...prev, [contentId]: data }));
+    } catch (error) {
+      console.error(`Error fetching comments for content ${contentId}:`, error);
+    }
+  };
+  
+  // Handle comment input change
+  const handleCommentChange = (contentId, value) => {
+    setNewComment((prev) => ({ ...prev, [contentId]: value }));
+  };
+  
+  // Handle submitting a comment
+  const handleCommentSubmit = async (contentId) => {
+    if (!newComment[contentId] || newComment[contentId].trim() === "") {
       setError("Comment cannot be empty.");
       return;
     }
+  
     try {
-      const response = await fetch(`https://backend-student-motivation-app-4.onrender.com/content/${contentId}/comment`, {
+      const response = await fetch(`${API_URL}/content/${contentId}/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ comment }),
+        body: JSON.stringify({ content: newComment[contentId], content_id: contentId }),
       });
+  
       if (response.ok) {
+        const newCommentData = await response.json();
+  
+        // Update local state with the new comment
         setContentComments((prev) => ({
           ...prev,
-          [contentId]: [
-            ...(prev[contentId] || []),
-            { id: Date.now(), text: comment },
-          ],
+          [contentId]: [...(prev[contentId] || []), newCommentData],
         }));
+  
         setSuccess("Comment added!");
         setTimeout(() => setSuccess(""), 3000);
-        setComment("");
+        setNewComment((prev) => ({ ...prev, [contentId]: "" }));
         setError(null);
+        
+        // Refresh comments list
+        fetchComments(contentId);
       } else {
         const errorData = await response.json();
         setError(errorData.message);
@@ -318,24 +342,38 @@ const Student = () => {
                     : "View"}
                 </Button>
               </div>
-              <div className="comment-input">
-                <input
-                  type="text"
-                  placeholder="Add a comment"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                />
-                <Button onClick={() => handleComment(content.id)} className="button comment-button">
-                  Comment
-                </Button>
-              </div>
-              {contentComments[content.id] && (
-                <div className="comments">
-                  {contentComments[content.id].map((comm) => (
-                    <p key={comm.id}>{comm.text}</p>
-                  ))}
-                </div>
-              )}
+              <div className="comment-actions">
+  <input
+    type="text"
+    value={newComment[content.id] || ""}
+    onChange={(e) => handleCommentChange(content.id, e.target.value)}
+    placeholder="Add a comment..."
+  />
+  <button onClick={() => handleCommentSubmit(content.id)}>Comment</button>
+</div>
+
+<div className="comments-section">
+  {contentComments[content.id]?.map((comment) => (
+    <div key={comment.id} className="comment-item">
+      {editingCommentId === comment.id ? (
+        <input
+          type="text"
+          value={editingCommentText}
+          onChange={(e) => setEditingCommentText(e.target.value)}
+          onBlur={() => handleCommentEdit(content.id, comment.id)}
+        />
+      ) : (
+        <p>{comment.content}</p>
+      )}
+      <button onClick={() => { setEditingCommentId(comment.id); setEditingCommentText(comment.content); }}>
+        Edit
+      </button>
+      <button onClick={() => handleCommentDelete(content.id, comment.id)}>Delete</button>
+    </div>
+  ))}
+</div>
+
+              
             </CardContent>
           </Card>
         ))}
