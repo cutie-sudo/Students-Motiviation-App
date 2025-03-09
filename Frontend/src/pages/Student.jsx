@@ -23,14 +23,19 @@ const Student = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetchCategories();
-    fetchContents();
-  }, []);
+    if (token) {
+      fetchCategories();
+      fetchContents();
+    } else {
+      setError("Authentication token is missing. Please log in.");
+    }
+  }, [token]);
 
   useEffect(() => {
     localStorage.setItem("likes", JSON.stringify(likes));
     localStorage.setItem("dislikes", JSON.stringify(dislikes));
   }, [likes, dislikes]);
+
 
   const fetchCategories = async () => {
     try {
@@ -38,12 +43,10 @@ const Student = () => {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.json();
-      setCategories(data);
+      if (!response.ok) throw new Error("Failed to fetch categories");
+      setCategories(await response.json());
     } catch (error) {
-      console.error("Error fetching categories:", error);
-      setError("Failed to fetch categories. Please try again later.");
+      setError(error.message);
     }
   };
 
@@ -53,12 +56,10 @@ const Student = () => {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.json();
-      setContents(data);
+      if (!response.ok) throw new Error("Failed to fetch contents");
+      setContents(await response.json());
     } catch (error) {
-      console.error("Error fetching contents:", error);
-      setError("Failed to fetch contents. Please try again later.");
+      setError(error.message);
     }
   };
 

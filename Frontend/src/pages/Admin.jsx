@@ -109,21 +109,26 @@ const Admin = () => {
         `https://backend-student-motivation-app-1.onrender.com/users/${userId}/deactivate`,
         {
           method: "PATCH",
-          headers: { Authorization: `Bearer ${authToken}` },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
         }
       );
-
+  
+      const data = await response.json(); // Ensure response is parsed
+  
       if (response.ok) {
-        toast.success("User deactivated successfully!");
+        toast.success(data.message || "User deactivated successfully!");
       } else {
-        toast.error("Failed to deactivate user.");
+        toast.error(data.message || "Failed to deactivate user.");
       }
     } catch (error) {
       console.error("Error deactivating user:", error);
       toast.error("Failed to connect to the server.");
     }
   };
-
+  
   // Category Management Functions (unchanged)
   const handleCreateCategory = async () => {
     try {
