@@ -1,12 +1,12 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useContext } from "react";
-import { UserContext } from "../context/UserContext"; 
-import SearchButton from "./SearchButton"; 
+import { UserContext } from "../context/UserContext";
+import SearchButton from "./SearchButton";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { authToken, logout, current_user } = useContext(UserContext); 
-
+  const { authToken, logout, current_user } = useContext(UserContext);
+  
   const [isLoggedIn, setIsLoggedIn] = useState(!!authToken);
 
   // ✅ Ensure Navbar updates when login/logout happens
@@ -16,9 +16,9 @@ const Navbar = () => {
 
   // ✅ Logout Function (Triggers Context Logout)
   const handleLogout = () => {
-    logout(); 
-    setIsLoggedIn(false); 
-    navigate("/login"); 
+    logout();
+    setIsLoggedIn(false);
+    navigate("/login");
   };
 
   return (
@@ -35,7 +35,6 @@ const Navbar = () => {
         <ul className="flex space-x-6 items-center mr-6">
           {isLoggedIn ? (
             <>
-
               {/* Conditionally render Admin/Student page button */}
               {current_user && current_user.role === "admin" && (
                 <li className="border border-white rounded-[10px] p-2">
@@ -57,14 +56,8 @@ const Navbar = () => {
                   </Link>
                 </li>
               )}
-                   <li className="border border-white rounded-[10px] p-2">
-            <Link
-            className="text-white text-[24px] font-light font-['Oswald'] hover:bg-blue-500 px-4 py-2 rounded transition duration-300"
-            to="/blog">Blog</Link> {/* New Blog Link */}
-          </li>
-
               <li className="border border-white rounded-[10px] p-2">
-                <button 
+                <button
                   onClick={handleLogout}
                   className="bg-cyan-500 text-white text-[23px] font-light font-['Oswald'] px-4 py-2 hover:bg-blue-600 rounded transition duration-300"
                 >
@@ -90,7 +83,6 @@ const Navbar = () => {
                   Sign Up
                 </Link>
               </li>
-           
               {/* Search Button Component */}
               <li className="nav-item relative flex items-center border border-gray-300 rounded-full bg-white px-4 py-2">
                 <input
