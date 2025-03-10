@@ -96,32 +96,36 @@ const Student = () => {
 
   const handleSubscribeCategory = async (category) => {
     try {
-      if (subscribedCategories.includes(category)) {
-        setError(`Already subscribed to ${category}`);
+      if (subscribedCategories.includes(category.id)) {
+        setError(`Already subscribed to ${category.name}`);
         return;
       }
-      const response = await fetch("https://backend-student-motivation-app-4.onrender.com/subscribe", {
+
+      const response = await fetch("https://backend-student-motivation-app-4.onrender.com/subscriptions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ category }),
+        body: JSON.stringify({ category_id: category.id }), // Send category_id instead of category
       });
-      if (response.ok) {
-        setSubscribedCategories((prev) => [...prev, category]);
-        setSuccess(`Subscribed to ${category}!`);
-        setTimeout(() => setSuccess(""), 3000);
-        setError(null);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message);
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message);
       }
+
+      setSubscribedCategories((prev) => [...prev, category.id]);
+      setSuccess(`Subscribed to ${category.name}!`);
+      setTimeout(() => setSuccess(""), 3000);
+      setError(null);
+      
     } catch (error) {
       console.error("Error subscribing to category:", error);
       setError("Failed to subscribe to category. Please try again later.");
     }
-  };
+};
 
   const fetchComments = async (contentId) => {
     try {
